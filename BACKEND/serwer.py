@@ -1,54 +1,41 @@
+import datetime
 from fastapi import FastAPI, File, Query, UploadFile, Form
 from typing import Annotated, List
 from pydantic import BaseModel
 from pymongo import MongoClient
-from post_handler import wyslanieWiadmosciPost, dodajNazweProjektu, dodajNazwePrzedmiotu
-from get_handler import pobierzNotatki, pobierzListeWiadomosci, pobierzListeProjektow
+from post_handler import createOgloszenie, modifyOgloszenie, usunOgloszenie
 
 app = FastAPI()
 
-@app.post("/api/post-sendMessage/")
-async def upload_files(
-    nazwa_projektu: Annotated[str, Form()],
-    nazwa_przedmiotu: Annotated[str, Form()],
-    files: Annotated[List[UploadFile], File()]
-):
-    return wyslanieWiadmosciPost(nazwa_projektu, nazwa_przedmiotu, files)
+client = MongoClient("mongodb://localhost:27017/")
+db = client["Baza"]
+collection = db["Punkty"]
 
-@app.post("/api/post-projectName/")
-async def add_project_name(nazwa: Annotated[str, Form()]):
-    result = dodajNazweProjektu(nazwa)
-    return {"message": result}
+from fastapi import FastAPI, Form
+from typing import Annotated, Dict
+from datetime import datetime
 
-@app.post("/api/post-przedmiotName/")
-async def add_przedmiot_name(
-    nazwa: Annotated[str, Form()],
-    nazwa_projektu: Annotated[str, Form()]
-):
-    result = dodajNazwePrzedmiotu(nazwa, nazwa_projektu)
-    return {"message": result}
+@app.post("/api/post-add-event/")
+async def add_event(id: Annotated[int, Form()], type: Annotated[str, Form()], startDateTime: Annotated[datetime, Form()], 
+                    endDateTime: Annotated[datetime, Form()], recurrence: Annotated[str, Form()], name: Annotated[str, Form()], 
+                    description: Annotated[str, Form()], location: Annotated[str, Form()], link: Annotated[str, Form()], 
+                    creator: Annotated[str, Form()], longitude: Annotated[str, Form()], latitude: Annotated[str, Form()]):
+    wynik = createOgloszenie(id, type, startDateTime, endDateTime, recurrence, name, description, location, link, creator, longitude,latitude)
+    return wynik
 
-@app.get("/api/get-files/")
-async def get_files(
-    nazwa_przedmiotu: Annotated[str, Form()],
-    nazwa_projektu: Annotated[str, Form()]
-):
-    files = pobierzNotatki(nazwa_przedmiotu, nazwa_projektu)
-    return {"files": files}
+@app.post("/api/post-update-event/")
+async def update_event(event_id: Annotated[int, Form()], type: Annotated[str, Form()], startDateTime: Annotated[datetime, Form()], 
+                       endDateTime: Annotated[datetime, Form()], recurrence: Annotated[str, Form()], name: Annotated[str, Form()], 
+                       description: Annotated[str, Form()], location: Annotated[str, Form()], link: Annotated[str, Form()], 
+                       creator: Annotated[str, Form()], longitude: Annotated[str, Form()], latitude: Annotated[str, Form()]):
+    wynik = modifyOgloszenie(event_id, type, startDateTime, endDateTime, recurrence, name, description, location, link, creator, longitude,latitude)
+    return wynik
 
-@app.get("/api/get-messege/")
-async def get_message(
-    nazwa_przedmiotu: Annotated[str, Form()],
-    nazwa_projektu: Annotated[str, Form()]
-):
-    messages = pobierzListeWiadomosci(nazwa_przedmiotu, nazwa_projektu)
-    return {"messages": messages}
-
-@app.get("/api/get-all-projects/")
-async def get_all_projects():
-    projects = pobierzListeProjektow()
-    return {"projects": projects}
+@app.post("/api/post-remove-event/")
+async def remove_event(event_id: Annotated[int, Form()]):
+    result = usunOgloszenie(event_id)
+    return result
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8080)
+    uvicorn.run(app, host="127.0.0.1", port=8080) 
