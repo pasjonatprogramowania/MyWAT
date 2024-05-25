@@ -1,13 +1,10 @@
 import datetime
-from fastapi import FastAPI, File, Query, UploadFile, Form
+from fastapi import FastAPI, Form
 from typing import Annotated, List
-from pydantic import BaseModel
-from pymongo import MongoClient
 from post_handler import createOgloszenie, modifyOgloszenie, usunOgloszenie
 from get_handler import get_all_events
 
 app = FastAPI()
-
 
 from fastapi import FastAPI, Form
 from typing import Annotated, Dict
