@@ -7,11 +7,6 @@ from get_handler import pobierzListePlikow, pobierzListeWiadomosci, pobierzListe
 
 app = FastAPI()
 
-# Konfiguracja połączenia z bazą danych MongoDB
-client = MongoClient('mongodb://localhost:27017/')
-db = client['Baza']
-collection = db['wiadomosci']
-
 @app.post("/api/post-sendMessage/")
 async def upload_files(
     nazwa_projektu: Annotated[str, Form()],
