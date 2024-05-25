@@ -1,3 +1,3 @@
 @echo off
-python serwer.py
+uvicorn serwer:app --reload
 pause

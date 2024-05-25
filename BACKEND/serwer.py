@@ -1,27 +1,30 @@
-from fastapi import FastAPI, File, Query, UploadFile, Form
-from typing import Annotated, List
+from fastapi import FastAPI, Query
 from pydantic import BaseModel
-from pymongo import MongoClient
-from post_handler import wyslanieWiadmosciPost, dodajNazweProjektu, dodajNazwePrzedmiotu
-from get_handler import pobierzNotatki, pobierzListeWiadomosci, pobierzListeProjektow
+from typing import List
+from get_handler import test_event, get_all_events_handler
 
 app = FastAPI()
 
-@app.post("/api/post-add-event/")
-async def add_event():
-    pass
+class EventFilter(BaseModel):
+    type: str = None
+    startDateTime: str = None
+    endDateTime: str = None
+    recurrence: str = None
+    name: str = None
+    description: str = None
+    location: str = None
+    link: str = None
+    creator: str = None
+    coordinates: List[float] = None
 
-@app.post("/api/post-update-event/")
-async def update_event():
-    pass
+@app.get("/api/get-all-events/")
+async def get_all_events(filter: EventFilter = None):
+    events = await get_all_events_handler(filter)
+    return events
 
-@app.post("/api/post-remove-event/")
-async def remove_event():
-    pass
-
-@app.get("/api/get-all-event/")
-async def get_all_events():
-    pass
+@app.get("/api/test/get-all-event/")
+async def test_get_all_events():
+    return test_event
 
 if __name__ == "__main__":
     import uvicorn
