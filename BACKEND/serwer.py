@@ -1,7 +1,7 @@
 import datetime
 from fastapi import FastAPI, Form
 from typing import Annotated, List
-from post_handler import createOgloszenie, modifyOgloszenie, usunOgloszenie
+from post_handler import createOgloszenie, modifyOgloszenie, usunOgloszenie, createPrzejazd, modifyPrzejazd, usunPrzejazd
 from get_handler import get_all_events
 
 app = FastAPI()
@@ -31,10 +31,29 @@ async def remove_event(event_id: Annotated[int, Form()]):
     result = usunOgloszenie(event_id)
     return result
 
+@app.post("/api/post-add-przejazd/")
+async def add_przejazd(id: Annotated[int, Form()], DateTime: Annotated[datetime, Form()], name: Annotated[str, Form()],
+                       description: Annotated[str, Form()], startLocation: Annotated[str, Form()], endLocation: Annotated[str, Form()],
+                       creator: Annotated[str, Form()], passengerNum: Annotated[int, Form()]):
+    result = createPrzejazd(id, DateTime, name, description, startLocation, endLocation, creator, passengerNum)
+    return result
+
+@app.post("/api/post-modify-przejazd/")
+async def modify_przejazd(id: Annotated[int, Form()], DateTime: Annotated[datetime, Form()], name: Annotated[str, Form()],
+                          description: Annotated[str, Form()], startLocation: Annotated[str, Form()], endLocation: Annotated[str, Form()],
+                          creator: Annotated[str, Form()], passengerNum: Annotated[int, Form()]):
+    result = modifyPrzejazd(id, DateTime, name, description, startLocation, endLocation, creator, passengerNum)
+    return result
+
+@app.post("/api/post-remove-przejazd/")
+async def remove_przejazd(id: Annotated[int, Form()]):
+    result = usunPrzejazd(id)
+    return result
+
 @app.get("/api/get-all-events/")
-async def get_events():
-    return get_all_events()
+async def get_events(typ: Annotated[list[str], Form()]):
+    return get_all_events(typ)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8080) 
+    uvicorn.run(app, host="127.0.0.1", port=8080)

@@ -10,10 +10,11 @@ collection = db['Ogloszenia']
 from bson import json_util
 import json
 
-def get_all_events():
+def get_all_events(typ: list[str]):
     events = collection.find()
     eventy = []
     for event in events:
+        #typ ma wartosci
         event['_id'] = str(event['_id'])
         eventy.append(event)
     return json.dumps(eventy, default=json_util.default)

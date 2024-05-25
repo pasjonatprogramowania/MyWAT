@@ -14,23 +14,65 @@ Aplikacja udostępnia następujące endpointy:
 
 - `/api/post-remove-event/`: Endpoint służący do usuwania wydarzenia. Przyjmuje identyfikator wydarzenia, który ma zostać usunięty.
 
+- `/api/post-add-przejazd/`: Endpoint służący do dodawania przejazdów
+- `/api/post-modify-przejazd/`: endpoint do modyfikacji przejazdów
+- `/api/post-remove-przejazd/`: endpoint do usuwania przejazdów
+
 ### GET
 
 - `/api/get-all-events/`: Endpoint służący do pobierania wszystkich wydarzeń z bazy danych. Zwraca dane wydarzeń w formacie JSON.
 
+- `/api/get-all-przejazdy/`: Endpoint służący do pobierania wszystkich przejazdów.
 ## Baza danych
 
 Aplikacja korzysta z bazy danych MongoDB i wykorzystuje bibliotekę PyMongo do komunikacji z bazą danych. Dane wydarzeń są przechowywane w kolekcji "Ogloszenia" w bazie danych "Baza".
 
+Struktura wydarzenia (event) w bazie danych:
+
+{
+ "id": <int>,
+ "type": <str>,
+ "startDateTime": <datetime>,
+ "endDateTime": <datetime>,
+ "recurrence": <str>,
+ "name": <str>,
+ "description": <str>,
+ "location": <str>,
+ "link": <str>,
+ "creator": <str>,
+ "longitude": <str>,
+ "latitude": <str>
+}
+
+Pusta struktura przejazdu:
+{
+ "id": <int>,
+ "DateTime": <datetime>,
+ "name": <str>,
+ "description": <str>,
+ "startLocation": <str>,
+ "endLocation": <str>,
+ "creator": <str>,
+ "passengerNum": <int>
+}
+
 ## Struktura aplikacji
 
-Aplikacja składa się z następujących plików:
+Aplikacja składa się z następujących plików i folderów:
 
-- `serwer.py`: Główny plik aplikacji, w którym zdefiniowane są endpointy FastAPI oraz uruchamiany jest serwer.
+[BACKEND]
+- get_handler.py
+- post_handler.py
+- serwer.py
 
-- `get_handler.py`: Plik zawierający funkcję `get_all_events()`, która pobiera wszystkie wydarzenia z bazy danych i zwraca je w formacie JSON.
+- `.git/`: Folder zawierający informacje i konfigurację systemu kontroli wersji Git.
 
-- `post_handler.py`: Plik zawierający funkcje obsługujące żądania POST, takie jak `createOgloszenie()` do dodawania nowego wydarzenia, `modifyOgloszenie()` do aktualizacji istniejącego wydarzenia oraz `usunOgloszenie()` do usuwania wydarzenia.
+- `BACKEND/`: Folder zawierający pliki związane z backendem aplikacji.
+ - `get_handler.py`: Plik zawierający funkcję `get_all_events()`, która pobiera wszystkie wydarzenia z bazy danych i zwraca je w formacie JSON.
+ - `post_handler.py`: Plik zawierający funkcje obsługujące żądania POST, takie jak `createOgloszenie()` do dodawania nowego wydarzenia, `modifyOgloszenie()` do aktualizacji istniejącego wydarzenia oraz `usunOgloszenie()` do usuwania wydarzenia.
+ - `serwer.py`: Główny plik aplikacji, w którym zdefiniowane są endpointy FastAPI oraz uruchamiany jest serwer.
+
+- `quasar-project/`: Folder zawierający pliki związane z frontendem aplikacji, zbudowanym przy użyciu frameworka Quasar.
 
 ## Uruchomienie aplikacji
 
