@@ -64,16 +64,15 @@
 </template>
 
 <script setup>
-import { ref, inject } from "vue";
+import { ref, inject, onMounted } from "vue";
 import { Style, Stroke, Circle, Fill } from "ol/style";
 import markerIcon from "../assets/location-pin.svg";
+
 defineOptions({
   name: "OpenStreetMap",
 });
 
-const props = defineProps({
-  getCoords: Boolean,
-});
+let getCoord = ref(false);
 
 const emit = defineEmits(["gotLocation"]);
 
@@ -86,7 +85,15 @@ const position = ref([]);
 
 const points = ref([
   {
-    x: 22,
+    x: 21,
+    y: 52,
+  },
+  {
+    x: 21,
+    y: 52,
+  },
+  {
+    x: 21,
     y: 52,
   },
 ]);

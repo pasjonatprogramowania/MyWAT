@@ -7,14 +7,14 @@
         label="Account settings"
         caption="Filtry"
       >
-      <q-option-group
-        v-model="group"
-        :options="options"
-        color="primary"
-        type="checkbox"
-      />
+        <q-option-group
+          v-model="group"
+          :options="options"
+          color="primary"
+          type="checkbox"
+        />
       </q-expansion-item>
-     </q-list>
+    </q-list>
     <q-expansion-item
       expand-separator
       icon="signal_wifi_off"
@@ -24,43 +24,38 @@
       <q-btn color="primary" text-color="white" label="Usuń" />
       <q-btn color="primary" text-color="white" label="Popraw" />
     </q-expansion-item>
-    <q-expansion-item
-      expand-separator
-      icon="signal_wifi_off"
-      label="Przejazdy"
-    >
+    <q-expansion-item expand-separator icon="signal_wifi_off" label="Przejazdy">
       <TimeInput></TimeInput>
       <q-btn color="primary" text-color="white" label="Pokaż" />
-      </q-expansion-item>
+    </q-expansion-item>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref } from "vue";
 import TimeInput from "components/TimeInput.vue";
 
 export default {
-  components: {TimeInput},
-  setup () {
+  components: { TimeInput },
+  setup() {
     return {
-      group: ref(['op1']),
+      group: ref(["op1"]),
 
       options: [
         {
-          label: 'Kołka zainteresowanie ',
-          value: 'kz'
+          label: "Kołka zainteresowanie ",
+          value: "kz",
         },
         {
-          label: 'Imprezy eventy watowe',
-          value: 'iw'
+          label: "Imprezy eventy watowe",
+          value: "iw",
         },
         {
-          label: 'Ogłoszenia',
-          value: 'og'
+          label: "Ogłoszenia",
+          value: "og",
         },
-
-      ]
-    }
-  }
-}
+      ],
+    };
+  },
+};
 </script>
