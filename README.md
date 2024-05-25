@@ -39,7 +39,7 @@ Notatka:
 - ID
 - Nazwa użytkownika
 - data
-- Content
+- Content (scieżka do pliku)
 - format
 
 Użykownik (na razie bez):
