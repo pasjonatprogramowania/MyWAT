@@ -1,7 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, Form
 from typing import List
-from post_handler import wyslanieWiadmosciPost, dodajNazweProjektu, dodajNazwePrzedmiotu, pobierzListePlikow, pobierzListeWiadomosci, pobierzListeProjektow
-from get_handler import  pobierzListePlikow, pobierzListeWiadomosci, pobierzListeProjektow
+from post_handler import wyslanieWiadmosciPost
+#from get_handler import 
 
 app = FastAPI()
 
