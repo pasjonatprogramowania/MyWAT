@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Query
 from pydantic import BaseModel
-from typing import List3
+from typing import List
 from get_handler import test_event, get_all_events_handler
 
 app = FastAPI()
@@ -17,12 +17,12 @@ class EventFilter(BaseModel):
     creator: str = None
     coordinates: List[float] = None
 
-@app.get("/get-all-events/")
+@app.get("/api/get-all-events/")
 async def get_all_events(filter: EventFilter = None):
     events = await get_all_events_handler(filter)
     return events
 
-@app.get("/test/get-all-events/")
+@app.get("/api/test/get-all-event/")
 async def test_get_all_events():
     return test_event
 
