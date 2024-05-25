@@ -1,0 +1,23 @@
+[{
+    "_id": {
+      "$oid": "6651f3ea078e104a702134f8"
+    },
+    "nazwa_projektu": "nazwa projektu",
+    "nazwa_przedmiotu": "nazwa przdmiotu",
+    "notatki": [
+      {
+        "ID": 1,
+        "nazwa_uzytkownika": "Uzytkownik",
+        "data": "2024-05-25 16:21:30",
+        "content": "DB/serwer.py",
+        "format": "application/octet-stream"
+      },
+      {
+        "ID": 2,
+        "nazwa_uzytkownika": "Uzytkownik",
+        "data": "2024-05-25 16:21:30",
+        "content": "DB/README.md",
+        "format": "text/markdown"
+      }
+    ]
+  }]

@@ -5,18 +5,25 @@ from pymongo import MongoClient
 # Konfiguracja połączenia z bazą danych MongoDB
 client = MongoClient('mongodb://localhost:27017/')
 db = client['Baza']
-collection = db['wiadomosci']
+collection = db['Notatka']
 
-def pobierzListePlikow(nazwa_przedmiotu: str, nazwa_projektu: str):
-    # Pobieranie listy plików z bazy danych
-    query = {
-        'nazwa_projektu': nazwa_projektu,
-        'nazwa_przedmiotu': nazwa_przedmiotu
-    }
-    message = collection.find_one(query)
-    if message:
-        notatki = message['notatki']
-        file_list = [notatka['content'] for notatka in notatki]
-        return {"files": file_list}
+def pobierzNotatki(nazwa_przedmiotu: str, nazwa_projektu: str):
+    Notatki = []
+    cursor = collection.find(
+        {
+            'nazwa_przedmiotu': nazwa_przedmiotu,
+            'nazwa_projektu': nazwa_projektu
+        }
+    )
+    for notatka in cursor:
+        print(notatka)
+        Notatki.append(notatka)
+    
+    if Notatki:
+        return {"notatki": Notatki}
     else:
-        return {"files": []}
+        return {"notatki": []}
+def pobierzListeWiadomosci():
+    pass
+def pobierzListeProjektow():
+    pass
