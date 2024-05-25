@@ -7,47 +7,21 @@ from get_handler import pobierzNotatki, pobierzListeWiadomosci, pobierzListeProj
 
 app = FastAPI()
 
-@app.post("/api/post-sendMessage/")
-async def upload_files(
-    nazwa_projektu: Annotated[str, Form()],
-    nazwa_przedmiotu: Annotated[str, Form()],
-    files: Annotated[List[UploadFile], File()]
-):
-    return wyslanieWiadmosciPost(nazwa_projektu, nazwa_przedmiotu, files)
+@app.post("/api/post-add-event/")
+async def add_event():
+    pass
 
-@app.post("/api/post-projectName/")
-async def add_project_name(nazwa: Annotated[str, Form()]):
-    result = dodajNazweProjektu(nazwa)
-    return {"message": result}
+@app.post("/api/post-update-event/")
+async def update_event():
+    pass
 
-@app.post("/api/post-przedmiotName/")
-async def add_przedmiot_name(
-    nazwa: Annotated[str, Form()],
-    nazwa_projektu: Annotated[str, Form()]
-):
-    result = dodajNazwePrzedmiotu(nazwa, nazwa_projektu)
-    return {"message": result}
+@app.post("/api/post-remove-event/")
+async def remove_event():
+    pass
 
-@app.get("/api/get-files/")
-async def get_files(
-    nazwa_przedmiotu: Annotated[str, Form()],
-    nazwa_projektu: Annotated[str, Form()]
-):
-    files = pobierzNotatki(nazwa_przedmiotu, nazwa_projektu)
-    return {"files": files}
-
-@app.get("/api/get-messege/")
-async def get_message(
-    nazwa_przedmiotu: Annotated[str, Form()],
-    nazwa_projektu: Annotated[str, Form()]
-):
-    messages = pobierzListeWiadomosci(nazwa_przedmiotu, nazwa_projektu)
-    return {"messages": messages}
-
-@app.get("/api/get-all-projects/")
-async def get_all_projects():
-    projects = pobierzListeProjektow()
-    return {"projects": projects}
+@app.get("/api/get-all-event/")
+async def get_all_events():
+    pass
 
 if __name__ == "__main__":
     import uvicorn
