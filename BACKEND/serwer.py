@@ -1,33 +1,46 @@
-from fastapi import FastAPI, File, UploadFile, Form
-from typing import List
-from post_handler import wyslanieWiadmosciPost, dodajNazweProjektu, dodajNazwePrzedmiotu, pobierzListePlikow, pobierzListeWiadomosci, pobierzListeProjektow
-from get_handler import  pobierzListePlikow, pobierzListeWiadomosci, pobierzListeProjektow
+from fastapi import FastAPI, File, Query, UploadFile, Form
+from typing import Annotated
+from pydantic import BaseModel
+from post_handler import wyslanieWiadmosciPost, dodajNazweProjektu, dodajNazwePrzedmiotu
+from get_handler import pobierzListePlikow, pobierzListeWiadomosci, pobierzListeProjektow
 
 app = FastAPI()
 
-
 @app.post("/api/post-sendMessage/")
-async def send_message(nazwa_projektu: str = Form(...), nazwa_przedmiotu: str = Form(...), files: List[UploadFile] = File(...)):
-    result = wyslanieWiadmosciPost(nazwa_projektu, nazwa_przedmiotu, files)
-    return {"message": result}
+async def upload_files(
+    nazwa_projektu: Annotated[str, Form()],
+    nazwa_przedmiotu: Annotated[str, Form()],
+    files: list[UploadFile]
+):
+    wyslanieWiadmosciPost(nazwa_projektu, nazwa_przedmiotu, files)
+    return 0
 
 @app.post("/api/post-projectName/")
-async def add_project_name(nazwa: str):
+async def add_project_name(nazwa: Annotated[str, Form()]):
     result = dodajNazweProjektu(nazwa)
     return {"message": result}
 
 @app.post("/api/post-przedmiotName/")
-async def add_przedmiot_name(nazwa: str, nazwa_projektu: str):
+async def add_przedmiot_name(
+    nazwa: Annotated[str, Form()],
+    nazwa_projektu: Annotated[str, Form()]
+):
     result = dodajNazwePrzedmiotu(nazwa, nazwa_projektu)
     return {"message": result}
 
 @app.get("/api/get-files/")
-async def get_files(nazwa_przedmiotu: str, nazwa_projektu: str):
+async def get_files(
+    nazwa_przedmiotu: Annotated[str, Form()],
+    nazwa_projektu: Annotated[str, Form()]
+):
     files = pobierzListePlikow(nazwa_przedmiotu, nazwa_projektu)
     return {"files": files}
 
 @app.get("/api/get-messege/")
-async def get_message(nazwa_przedmiotu: str, nazwa_projektu: str):
+async def get_message(
+    nazwa_przedmiotu: Annotated[str, Form()],
+    nazwa_projektu: Annotated[str, Form()]
+):
     messages = pobierzListeWiadomosci(nazwa_przedmiotu, nazwa_projektu)
     return {"messages": messages}
 
@@ -38,4 +51,4 @@ async def get_all_projects():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8080)
