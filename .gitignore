@@ -12,6 +12,7 @@ venv.bak/
 .venv/
 .venv
 /BACKEND/myenv
+
 # FastAPI
 .env
 .venv
