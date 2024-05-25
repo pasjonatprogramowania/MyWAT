@@ -4,12 +4,10 @@ from typing import Annotated, List
 from pydantic import BaseModel
 from pymongo import MongoClient
 from post_handler import createOgloszenie, modifyOgloszenie, usunOgloszenie
+from get_handler import get_all_events
 
 app = FastAPI()
 
-client = MongoClient("mongodb://localhost:27017/")
-db = client["Baza"]
-collection = db["Punkty"]
 
 from fastapi import FastAPI, Form
 from typing import Annotated, Dict
@@ -35,6 +33,10 @@ async def update_event(event_id: Annotated[int, Form()], type: Annotated[str, Fo
 async def remove_event(event_id: Annotated[int, Form()]):
     result = usunOgloszenie(event_id)
     return result
+
+@app.get("/api/get-all-events/")
+async def get_events():
+    return get_all_events()
 
 if __name__ == "__main__":
     import uvicorn
