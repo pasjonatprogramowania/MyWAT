@@ -18,6 +18,7 @@
     "axios": "^1.7.2",
     "katex": "^0.16.10",
     "pdf-vue3": "^1.0.12",
+    "pinia": "^2.1.7",
     "pspdfkit": "^2024.3.2",
     "quasar": "^2.16.0",
     "vatex": "^0.1.0",
@@ -25,7 +26,8 @@
     "vue-katex": "^0.5.0",
     "vue-router": "^4.0.12",
     "vue3-excel-editor": "^1.0.35",
-    "vue3-openlayers": "^10.0.0"
+    "vue3-openlayers": "^10.0.0",
+    "vuex-smart-module": "^0.6.2"
   },
   "devDependencies": {
     "@quasar/app-vite": "^1.9.0",

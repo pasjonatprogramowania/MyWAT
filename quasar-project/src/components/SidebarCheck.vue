@@ -1,25 +1,30 @@
 <template>
   <div class="q-pa-lg">
-    <q-list bordered class="rounded-borders">
+    <h5>Opcje</h5>
+    <q-list bordered class="prounded-borders">
       <q-expansion-item
         expand-separator
-        icon="perm_identity"
+        icon="event"
         label="Typ wydarzenia"
-        caption="Filtry"
       >
         <q-option-group
           v-model="group"
           :options="options"
           color="primary"
+          class="q-pa-sm"
           type="checkbox"
         />
       </q-expansion-item>
     </q-list>
     <q-expansion-item
       expand-separator
-      icon="signal_wifi_off"
+      icon="place"
+
       label="Dodawanie punktów"
     >
+      <div class="q-pa-sm">
+
+
       <q-btn
         color="primary"
         text-color="white"
@@ -38,8 +43,9 @@
         label="Popraw"
         @click="emit('correctPoint')"
       />
+      </div>
     </q-expansion-item>
-    <q-expansion-item expand-separator icon="signal_wifi_off" label="Przejazdy">
+    <q-expansion-item class="q-pa-sm" expand-separator icon="local_shipping" label="Przejazdy">
       <TimeInput></TimeInput>
       <q-btn color="primary" text-color="white" label="Pokaż" />
     </q-expansion-item>
