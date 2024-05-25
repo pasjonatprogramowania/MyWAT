@@ -11,7 +11,6 @@
       :zoom="zoom"
       :projection="projection"
     />
-
     <ol-tile-layer>
       <ol-source-osm />
     </ol-tile-layer>
@@ -53,7 +52,9 @@
         </ol-style-text>
       </ol-style>
     </ol-animated-clusterlayer>
+
   </ol-map>
+
 </template>
 
 <script setup>
@@ -62,6 +63,7 @@ import { watch } from "vue";
 import { ref, inject } from "vue";
 import { Style, Stroke, Circle, Fill } from "ol/style";
 import markerIcon from "../assets/location-pin.svg";
+import SidebarCheck from "../components/SidebarCheck.vue";
 
 const center = ref([20.89958, 52.25318]);
 const projection = ref("EPSG:4326");
@@ -112,7 +114,6 @@ watch(
     //   });
   }
 );
-
 const featureStyle = () => {
   return [
     new Style({
