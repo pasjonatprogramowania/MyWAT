@@ -4,22 +4,40 @@
 POST:
 ```
 /api/
-	/post-files/ 
-		/pid/
-	/post-chat/
+	/post-sendMessage/ przeslanie plików, wiadomosci
+		{nazwa_projektu,nazwa przedmiotu ,lista plików}
+	/post-chat/ (na razie nie)
 		/uid/
-	/post-project-id/
-	/post-user-id/
+	/post-projectName/ dodanie np. SEMESTER
+    {Nazwa}
+    /post-przedmiotName/ dodanie np. SEMESTER
+    {Nazwa, NazwaProjektu}
+	/post-user-id/ 
 GET:
 /api/
 	/get-files/
-		/pid/
-	/get-mess/
-		/uid/
+		{NazwaPrzedmiotu, NazwaProjektu}
+        //lista Notatek
+	/get-messege/
+		{NazwaPrzedmiotu, NazwaProjektu}
+        //lista Notatek (tylko tekstowe)
 	/get-all-projects-id/
+        //lista Przedmotów
 	/get-project-id/
 	/get-user-id/
 ```
+### Baza danych(relacyjna):
+
+Notatka:
+- ID
+- Nazwa użytkownika
+- data
+- Content
+- format
+
+Użykownik (na razie bez):
+- ID Użytkownika
+- nazwa użytkonika
 
 ### Aplikacja:
 - Indeksuje i kataloguje informacje dotyczące materiałów edukacyjnych,
