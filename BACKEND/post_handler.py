@@ -4,6 +4,7 @@ from pymongo import MongoClient
 client = MongoClient("mongodb://localhost:27017")
 db = client["Baza"]
 ogloszenia = db["Ogloszenia"]
+przejazdy = db["Przejazdy"]
 
 def createOgloszenie(id: int, type: str, startDateTime: datetime, endDateTime: datetime, recurrence: str,
                      name: str, description: str, location: str, link: str, creator: str, longitude: str, latitude: str):
@@ -60,3 +61,49 @@ def usunOgloszenie(event_id: int):
         return "Udało się usunąć rekord"
     else:
         return "Nie udało się"
+
+def createPrzejazd(id: int, DateTime: datetime, name: str, description: str, startLocation: str, endLocation: str, creator: str, passengerNum: int):
+    przejazd_dict = {
+        "id": id,
+        "DateTime": DateTime,
+        "name": name,
+        "description": description,
+        "startLocation": startLocation,
+        "endLocation": endLocation,
+        "creator": creator,
+        "passengerNum": passengerNum
+    }
+    wynik = przejazdy.insert_one(przejazd_dict)
+    if wynik.inserted_id:
+        return "Poprawnie dodano przejazd"
+    else:
+        return "Nie udało się dodać przejazdu"
+
+def modifyPrzejazd(id: int, DateTime: datetime, name: str, description: str, startLocation: str, endLocation: str, creator: str, passengerNum: int):
+    przejazd_do_zmiany = przejazdy.find_one({"id": id})
+    if przejazd_do_zmiany:
+        przejazd_dict = {
+            "id": id,
+            "DateTime": DateTime,
+            "name": name,
+            "description": description,
+            "startLocation": startLocation,
+            "endLocation": endLocation,
+            "creator": creator,
+            "passengerNum": passengerNum
+        }
+        przejazdy.delete_one({"id": id})
+        wynik = przejazdy.insert_one(przejazd_dict)
+        if wynik.inserted_id:
+            return "Udało się zmodyfikować przejazd"
+        else:
+            return "Nie udało się zmodyfikować przejazdu"
+    else:
+        return "Nie znaleziono przejazdu o podanym id"
+
+def usunPrzejazd(id: int):
+    wynik = przejazdy.delete_one({"id": id})
+    if wynik.deleted_count > 0:
+        return "Udało się usunąć przejazd"
+    else:
+        return "Nie udało się usunąć przejazdu"
