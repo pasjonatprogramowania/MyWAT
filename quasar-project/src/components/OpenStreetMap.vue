@@ -152,10 +152,7 @@ const geoLocChange = (event) => {
 let getCoords = ref(false);
 
 const manageClick = (event) => {
-  if (localStorage.getItem("getLocation") == "true") {
-    getCoords.value = false;
-    console.log("works!", event.coordinate);
-    emit("gotLocation", { coordinates: event.coordinate });
-  }
+ console.log("Clicked coordinates:", event.coordinate);
+ emit("gotLocation", { coordinates: event.coordinate });
 };
 </script>

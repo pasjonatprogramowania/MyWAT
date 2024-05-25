@@ -56,4 +56,4 @@ async def get_events(typ: Annotated[list[str], Form()]):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8080)
+    uvicorn.run(app, host="localhost", port=8080)
