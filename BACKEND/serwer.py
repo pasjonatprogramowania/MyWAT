@@ -1,7 +1,6 @@
 from fastapi import FastAPI, File, Query, UploadFile, Form
 from typing import Annotated
 from pydantic import BaseModel
-from pymongo import MongoClient
 from post_handler import wyslanieWiadmosciPost, dodajNazweProjektu, dodajNazwePrzedmiotu
 from get_handler import pobierzListePlikow, pobierzListeWiadomosci, pobierzListeProjektow
 
