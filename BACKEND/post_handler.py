@@ -6,10 +6,9 @@ import os
 
 client = MongoClient("mongodb://localhost:27017")
 db = client["Baza"]
-collection = db["wiadomosci"]
+notatki = db["Notatka"]
 
 def wyslanieWiadmosciPost(nazwa_projektu: str, nazwa_przedmiotu: str, files: List[UploadFile]):
-    notatki = []
     for file in files:
         # Zapisywanie pliku na serwerze
         file_path = f"DB/{file.filename}"
@@ -18,22 +17,15 @@ def wyslanieWiadmosciPost(nazwa_projektu: str, nazwa_przedmiotu: str, files: Lis
             buffer.write(contents)
 
         notatka = {
-            'ID': len(notatki) + 1,
+            'ID': file.filename,
+            'nazwa_projektu': nazwa_projektu,
+            'nazwa_przedmiotu': nazwa_przedmiotu,
             'nazwa_uzytkownika': 'Uzytkownik',
             'data': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             'content': file_path,
             'format': file.content_type
         }
-        notatki.append(notatka)
-
-    # Zapisywanie notatek w bazie danych
-    message_data = {
-        'nazwa_projektu': nazwa_projektu,
-        'nazwa_przedmiotu': nazwa_przedmiotu,
-        'notatki': notatki
-    }
-    result = collection.insert_one(message_data)
-
+        result = notatki.insert_one(notatka)
     # Zwracanie wyniku
     if result.inserted_id:
         return {"message": "Pliki zostały pomyślnie przesłane i zapisane w bazie danych"}

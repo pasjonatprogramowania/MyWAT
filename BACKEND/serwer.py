@@ -3,13 +3,9 @@ from typing import Annotated, List
 from pydantic import BaseModel
 from pymongo import MongoClient
 from post_handler import wyslanieWiadmosciPost, dodajNazweProjektu, dodajNazwePrzedmiotu
-from get_handler import pobierzListePlikow, pobierzListeWiadomosci, pobierzListeProjektow
+from get_handler import pobierzNotatki, pobierzListeWiadomosci, pobierzListeProjektow
 
 app = FastAPI()
-
-client = MongoClient("mongodb://localhost:27017")
-db = client["Baza"]
-collection = db["wiadomosci"]
 
 @app.post("/api/post-sendMessage/")
 async def upload_files(
@@ -37,7 +33,7 @@ async def get_files(
     nazwa_przedmiotu: Annotated[str, Form()],
     nazwa_projektu: Annotated[str, Form()]
 ):
-    files = pobierzListePlikow(nazwa_przedmiotu, nazwa_projektu)
+    files = pobierzNotatki(nazwa_przedmiotu, nazwa_projektu)
     return {"files": files}
 
 @app.get("/api/get-messege/")
