@@ -6,11 +6,6 @@ const routes = [
       {
         path: "",
         component: () => import("pages/IndexPage.vue"),
-        props: (route) => ({
-          // semester: JSON.parse(route.params.semester),
-          // project: JSON.parse(route.params.project),
-          // lesson: JSON.parse(route.params.lesson),
-        }),
       },
     ],
   },

@@ -1,5 +1,0 @@
-import VueExcelEditor from "vue3-excel-editor";
-
-export default ({ app, router, store }) => {
-  app.use(VueExcelEditor);
-};

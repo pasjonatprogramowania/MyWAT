@@ -49,7 +49,7 @@
                       v-for="l in p.lessons"
                       :key="l.id"
                       @click.stop="
-                        sendRequest({
+                        updateRequest({
                           semester: s.id,
                           project: p.id,
                           lesson: l.id,
@@ -70,15 +70,15 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <index-page :what-to-show="req" />
     </q-page-container>
   </q-layout>
 </template>
 
 <script setup>
+import IndexPage from "src/pages/IndexPage.vue";
 import axios from "axios";
 import PDF from "pdf-vue3";
-import router from "src/router";
 import { ref } from "vue";
 
 defineOptions({
@@ -89,6 +89,12 @@ const props = defineProps({
   allProjects: {
     type: Object,
   },
+});
+
+let req = ref({
+  semester: 1,
+  project: 1,
+  lesson: 1,
 });
 
 const leftDrawerOpen = ref(false);
@@ -138,7 +144,7 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 
-function sendRequest(req) {
-  console.log(req);
+function updateRequest(newReq) {
+  this.req = newReq;
 }
 </script>
