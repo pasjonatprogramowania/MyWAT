@@ -72,8 +72,6 @@ defineOptions({
   name: "OpenStreetMap",
 });
 
-let getCoord = ref(false);
-
 const emit = defineEmits(["gotLocation"]);
 
 const center = ref([20.89958, 52.25318]);
@@ -151,8 +149,10 @@ const geoLocChange = (event) => {
   view.value?.setCenter(event.target?.getPosition());
 };
 
+let getCoords = ref(false);
+
 const manageClick = (event) => {
-  if (getCoords.value) {
+  if (localStorage.getItem("getLocation") == "true") {
     getCoords.value = false;
     console.log("works!", event.coordinate);
     emit("gotLocation", { coordinates: event.coordinate });

@@ -4,7 +4,7 @@
       <q-expansion-item
         expand-separator
         icon="perm_identity"
-        label="Account settings"
+        label="Typ wydarzenia"
         caption="Filtry"
       >
         <q-option-group
@@ -20,9 +20,24 @@
       icon="signal_wifi_off"
       label="Dodawanie punktów"
     >
-      <q-btn color="primary" text-color="white" label="Dodaj" />
-      <q-btn color="primary" text-color="white" label="Usuń" />
-      <q-btn color="primary" text-color="white" label="Popraw" />
+      <q-btn
+        color="primary"
+        text-color="white"
+        label="Dodaj"
+        @click="emit('addPoint')"
+      />
+      <q-btn
+        color="primary"
+        text-color="white"
+        label="Usuń"
+        @click="emit('removePoint')"
+      />
+      <q-btn
+        color="primary"
+        text-color="white"
+        label="Popraw"
+        @click="emit('correctPoint')"
+      />
     </q-expansion-item>
     <q-expansion-item expand-separator icon="signal_wifi_off" label="Przejazdy">
       <TimeInput></TimeInput>
@@ -31,31 +46,25 @@
   </div>
 </template>
 
-<script>
-import { ref } from "vue";
+<script setup>
+import { ref, defineEmits } from "vue";
 import TimeInput from "components/TimeInput.vue";
 
-export default {
-  components: { TimeInput },
-  setup() {
-    return {
-      group: ref(["op1"]),
+const emit = defineEmits(["addPoint", "removePoint", "correctPoint"]);
+const group = ref(["kz"]);
 
-      options: [
-        {
-          label: "Kołka zainteresowanie ",
-          value: "kz",
-        },
-        {
-          label: "Imprezy eventy watowe",
-          value: "iw",
-        },
-        {
-          label: "Ogłoszenia",
-          value: "og",
-        },
-      ],
-    };
+const options = ref([
+  {
+    label: "Koła zainteresowań ",
+    value: "kz",
   },
-};
+  {
+    label: "Imprezy eventy watowe",
+    value: "iw",
+  },
+  {
+    label: "Ogłoszenia",
+    value: "og",
+  },
+]);
 </script>

@@ -16,7 +16,7 @@
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <SidebarCheck></SidebarCheck>
+      <SidebarCheck @addPoint="console.log('add')"></SidebarCheck>
     </q-drawer>
 
     <q-page-container>
@@ -37,24 +37,33 @@ defineOptions({
 
 const leftDrawerOpen = ref(false);
 
+localStorage.setItem(
+  "event",
+  JSON.stringify({
+    types: [],
+    points: [],
+    date: Date,
+  })
+);
+
+localStorage.setItem("getLocation", "false");
+localStorage.setItem("getData", "false");
+localStorage.setItem("getTypes", "false");
+
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
-}
-
-function updateRequest(newReq) {
-  this.req = newReq;
 }
 
 const sendNewEvent = () => {
   axios
     .post("add-event", {
-      type: "wcy",
-      beginDate: Date("11-11-2023"),
+      types: newEvent.value.types,
+      beginDate: newEvent.value.date,
       endDate: Date("12-11-2023"),
       frequency: "week",
       title: "rfejiorfe",
       description: "iedtrfuhgnsiuojhngf9pios",
-      coordinates: coors,
+      coordinates: newEvent.value.points,
       author: "me",
       placeName: "Sztab",
     })
