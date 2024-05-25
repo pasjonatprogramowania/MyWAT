@@ -28,23 +28,27 @@ GET:
 ```
 ### Baza danych(Mongodb PyMongo):
 
-/BD/
-
+COLLECTION:
 Wiadmosc:
 	'nazwa_projektu': nazwa_projektu,
 	'nazwa_przedmiotu': nazwa_przedmiotu,
 	'Notatka': Notatka
-	
-Notatka:
-- ID
-- Nazwa użytkownika
-- data
-- Content (scieżka do pliku)
-- format
 
 Użykownik (na razie bez):
-- ID Użytkownika
-- nazwa użytkonika
+	- ID Użytkownika
+	- nazwa użytkonika
+
+(tak wyglada notatka)
+Notatka:
+	- ID
+	- Nazwa użytkownika
+	- data
+	- Content (scieżka do pliku)
+	- format
+
+
+
+
 
 ### Aplikacja:
 - Indeksuje i kataloguje informacje dotyczące materiałów edukacyjnych,
