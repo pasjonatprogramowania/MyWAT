@@ -10,7 +10,7 @@ POST:
 		/uid/
 	/post-projectName/ dodanie np. SEMESTER
     {Nazwa}
-    /post-przedmiotName/ dodanie np. SEMESTER
+    /post-przedmiotName/ dodanie np. WdA
     {Nazwa, NazwaProjektu}
 	/post-user-id/ 
 GET:
@@ -26,8 +26,15 @@ GET:
 	/get-project-id/
 	/get-user-id/
 ```
-### Baza danych(relacyjna):
+### Baza danych(Mongodb PyMongo):
 
+/BD/
+
+Wiadmosc:
+	'nazwa_projektu': nazwa_projektu,
+	'nazwa_przedmiotu': nazwa_przedmiotu,
+	'Notatka': Notatka
+	
 Notatka:
 - ID
 - Nazwa użytkownika
