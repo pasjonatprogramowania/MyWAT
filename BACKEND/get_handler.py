@@ -14,7 +14,7 @@ def get_all_events(typ: list[str]):
     events = collection.find()
     eventy = []
     for event in events:
-        #typ ma wartosci
+        #typ ma wartosci ogloszenia , imprezy, koła zainteresowan
         event['_id'] = str(event['_id'])
         eventy.append(event)
     return json.dumps(eventy, default=json_util.default)
