@@ -4,27 +4,30 @@
 POST:
 ```
 /api/
-	/post-sendMessage/ przeslanie plików, wiadomosci
-		{nazwa_projektu,nazwa przedmiotu ,lista plików}
-	/post-chat/ (na razie nie)
-		/uid/
-	/post-projectName/ dodanie np. SEMESTER
-    {Nazwa}
-    /post-przedmiotName/ dodanie np. WdA
-    {Nazwa, NazwaProjektu}
-	/post-user-id/ 
+	/post-add-event/
+	/post-update-event/
+	/post-remove-event/
+
 GET:
-/api/
-	/get-files/
-		{NazwaPrzedmiotu, NazwaProjektu}
-        //lista Notatek
-	/get-messege/
-		{NazwaPrzedmiotu, NazwaProjektu}
-        //lista Notatek (tylko tekstowe)
-	/get-all-projects-id/
-        //lista Przedmotów
-	/get-project-id/
-	/get-user-id/
+	/get-all-event/
+	{tag}
+	
+	
+Co ma byc na mapie:
+- Pinezki z eventami/ogłoszenia
+	typy:
+		- Kołka zainteresowanie 
+		- Imprezy,eventy watowe
+		- Ogłoszenia
+	Data i czas rozpoczeia:
+	Data i czas zakonczenia:
+	Co ile się powtarza:
+	Nazwa:
+	Opis:
+	Miejsce:
+	Link:
+	Twórca:
+	Kordynaty:
 ```
 ### Baza danych(Mongodb PyMongo):
 
