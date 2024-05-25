@@ -4,20 +4,19 @@ from fastapi import UploadFile, HTTPException
 from typing import List
 import os
 
-# Konfiguracja połączenia z bazą danych MongoDB
-client = MongoClient('mongodb://localhost:27017/')
-db = client['Baza']
-collection = db['wiadomosci']
+client = MongoClient("mongodb://localhost:27017")
+db = client["Baza"]
+collection = db["wiadomosci"]
 
-async def wyslanieWiadmosciPost(nazwa_projektu: str, nazwa_przedmiotu: str, files: list[UploadFile]):
+def wyslanieWiadmosciPost(nazwa_projektu: str, nazwa_przedmiotu: str, files: List[UploadFile]):
     notatki = []
     for file in files:
         # Zapisywanie pliku na serwerze
         file_path = f"DB/{file.filename}"
         with open(file_path, "wb") as buffer:
-            buffer.write(await file.read())
+            contents = file.file.read()
+            buffer.write(contents)
 
-        # Tworzenie obiektu Notatka
         notatka = {
             'ID': len(notatki) + 1,
             'nazwa_uzytkownika': 'Uzytkownik',
@@ -33,9 +32,13 @@ async def wyslanieWiadmosciPost(nazwa_projektu: str, nazwa_przedmiotu: str, file
         'nazwa_przedmiotu': nazwa_przedmiotu,
         'notatki': notatki
     }
-    collection.insert_one(message_data)
+    result = collection.insert_one(message_data)
 
-    return "Wiadomość została wysłana i zapisana w bazie danych."
+    # Zwracanie wyniku
+    if result.inserted_id:
+        return {"message": "Pliki zostały pomyślnie przesłane i zapisane w bazie danych"}
+    else:
+        return {"message": "Wystąpił błąd podczas zapisywania plików w bazie danych"}
 
 def dodajNazweProjektu(nazwa: str):
     pass

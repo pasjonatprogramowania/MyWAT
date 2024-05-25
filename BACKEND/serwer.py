@@ -1,19 +1,23 @@
 from fastapi import FastAPI, File, Query, UploadFile, Form
-from typing import Annotated
+from typing import Annotated, List
 from pydantic import BaseModel
+from pymongo import MongoClient
 from post_handler import wyslanieWiadmosciPost, dodajNazweProjektu, dodajNazwePrzedmiotu
-from get_handler import get_files, get_message, get_all_projects
+from get_handler import pobierzListePlikow, pobierzListeWiadomosci, pobierzListeProjektow
 
 app = FastAPI()
+
+client = MongoClient("mongodb://localhost:27017")
+db = client["Baza"]
+collection = db["wiadomosci"]
 
 @app.post("/api/post-sendMessage/")
 async def upload_files(
     nazwa_projektu: Annotated[str, Form()],
     nazwa_przedmiotu: Annotated[str, Form()],
-    files: list[UploadFile]
+    files: Annotated[List[UploadFile], File()]
 ):
-    wyslanieWiadmosciPost(nazwa_projektu, nazwa_przedmiotu, files)
-    return 0
+    return wyslanieWiadmosciPost(nazwa_projektu, nazwa_przedmiotu, files)
 
 @app.post("/api/post-projectName/")
 async def add_project_name(nazwa: Annotated[str, Form()]):
@@ -29,22 +33,25 @@ async def add_przedmiot_name(
     return {"message": result}
 
 @app.get("/api/get-files/")
-async def get_files_endpoint(
-    nazwa_przedmiotu: str = Query(...),
-    nazwa_projektu: str = Query(...)
+async def get_files(
+    nazwa_przedmiotu: Annotated[str, Form()],
+    nazwa_projektu: Annotated[str, Form()]
 ):
-    return get_files(nazwa_przedmiotu, nazwa_projektu)
+    files = pobierzListePlikow(nazwa_przedmiotu, nazwa_projektu)
+    return {"files": files}
 
-@app.get("/api/get-message/")
-async def get_message_endpoint(
-    nazwa_przedmiotu: str = Query(...),
-    nazwa_projektu: str = Query(...)
+@app.get("/api/get-messege/")
+async def get_message(
+    nazwa_przedmiotu: Annotated[str, Form()],
+    nazwa_projektu: Annotated[str, Form()]
 ):
-    return get_message(nazwa_przedmiotu, nazwa_projektu)
+    messages = pobierzListeWiadomosci(nazwa_przedmiotu, nazwa_projektu)
+    return {"messages": messages}
 
 @app.get("/api/get-all-projects/")
-async def get_all_projects_endpoint():
-    return get_all_projects()
+async def get_all_projects():
+    projects = pobierzListeProjektow()
+    return {"projects": projects}
 
 if __name__ == "__main__":
     import uvicorn
