@@ -1,3 +1,4 @@
+from fastapi import Query
 from typing import List
 from fastapi import UploadFile
 from pymongo import MongoClient
@@ -21,8 +22,14 @@ def pobierzListePlikow(nazwa_przedmiotu: str, nazwa_projektu: str):
 
     return files
 
-def pobierzListeWiadomosci(nazwa_przedmiotu: str, nazwa_projektu: str):
-    pass
+def get_message(nazwa_przedmiotu: str, nazwa_projektu: str):
+    messages = pobierzListeWiadomosci(nazwa_przedmiotu, nazwa_projektu)
+    if not messages:
+        messages = dummy_messages  # Użyj przykładowych danych, jeśli brak wyników
+    return {"messages": messages}
 
-def pobierzListeProjektow():
-    pass
+def get_all_projects():
+    projects = pobierzListeProjektow()
+    if not projects:
+        projects = dummy_projects  # Użyj przykładowych danych, jeśli brak wyników
+    return {"projects": projects}
