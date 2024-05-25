@@ -28,13 +28,17 @@ GET:
 ```
 ### Baza danych(Mongodb PyMongo):
 
-/BD/
+/BD/{pliki_wyslane}
 
 Wiadmosc:
 	'nazwa_projektu': nazwa_projektu,
 	'nazwa_przedmiotu': nazwa_przedmiotu,
 	'Notatka': Notatka
-	
+listaProj:
+	nazwa_projektu: nazwa_projektu
+listaPrzed:
+    nazwa_przedmiotu: nazwa_przedmiotu
+
 Notatka:
 - ID
 - Nazwa użytkownika
