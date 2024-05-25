@@ -2,7 +2,11 @@
   <ol-map
     :loadTilesWhileAnimating="true"
     :loadTilesWhileInteracting="true"
-    style="height: 400px"
+    :style="{
+      height: '90vh',
+      zIndex: -1,
+    }"
+    @click.prevent="manageClick($event)"
   >
     <ol-view
       ref="view"
@@ -11,27 +15,31 @@
       :zoom="zoom"
       :projection="projection"
     />
+
     <ol-tile-layer>
       <ol-source-osm />
     </ol-tile-layer>
 
-    <ol-interaction-clusterselect
-      @select="featureSelected"
-      :pointRadius="20"
-      :featureStyle="featureStyle"
-    >
+    <ol-interaction-clusterselect :pointRadius="2" :featureStyle="featureStyle">
       <!-- style of the marked selected from the cluster items after first click on the cluster itself -->
       <ol-style>
         <ol-style-icon :src="markerIcon" :scale="0.05"></ol-style-icon>
       </ol-style>
     </ol-interaction-clusterselect>
 
-    <ol-animated-clusterlayer :animationDuration="500" :distance="40">
+    <ol-animated-clusterlayer :animationDuration="50" :distance="40">
       <ol-source-vector ref="vectorsource">
         <ol-feature v-for="index in points.length" :key="index">
-          <ol-geom-point :coordinates="points[index - 1]"></ol-geom-point>
+          <ol-geom-point
+            :coordinates="[points[index - 1].x, points[index - 1].y]"
+          ></ol-geom-point>
         </ol-feature>
       </ol-source-vector>
+
+      <!-- <ol-geolocation
+        :projection="projection"
+        @change:position="geoLocChange"
+      /> -->
 
       <ol-style :overrideStyleFunction="overrideStyleFunction">
         <ol-style-stroke color="red" :width="2"></ol-style-stroke>
@@ -52,68 +60,36 @@
         </ol-style-text>
       </ol-style>
     </ol-animated-clusterlayer>
-
   </ol-map>
-
 </template>
 
 <script setup>
-import axios from "axios";
-import { watch } from "vue";
 import { ref, inject } from "vue";
 import { Style, Stroke, Circle, Fill } from "ol/style";
 import markerIcon from "../assets/location-pin.svg";
-import SidebarCheck from "../components/SidebarCheck.vue";
+defineOptions({
+  name: "OpenStreetMap",
+});
+
+const props = defineProps({
+  getCoords: Boolean,
+});
+
+const emit = defineEmits(["gotLocation"]);
 
 const center = ref([20.89958, 52.25318]);
 const projection = ref("EPSG:4326");
 const zoom = ref(15);
+const view = ref();
 const rotation = ref(0);
+const position = ref([]);
 
 const points = ref([
-  [21, 52],
-  [20.8, 52.3],
-  [20.8, 52.3],
-  [20.8, 52.3],
-  [20.8, 52.3],
-  [20.8, 52.3],
-  [20.8, 52.3],
-  [20.8, 52.3],
-  [20.8, 52.3],
-  [20.8, 52.3],
-  [20.8, 52.3],
-  [20.8, 52.3],
+  {
+    x: 22,
+    y: 52,
+  },
 ]);
-
-defineOptions({
-  name: "IndexPage",
-});
-
-const props = defineProps({
-  whatToShow: Object,
-});
-
-watch(
-  () => props.whatToShow,
-  (newValue, oldValue) => {
-    console.log("request sent");
-    // axios
-    //   .post("lesson", {
-    //     faculty: "wcy",
-    //     studies: "poli",
-    //     semester: newValue.semester.id,
-    //     project: newValue.project.id,
-    //     lesson: newValue.lesson.id,
-    //     token: "iedtrfuhgnsiuojhngf9pios",
-    //   })
-    //   .then((res) => {
-    //     res.forEach((b) => {});
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //   });
-  }
-);
 const featureStyle = () => {
   return [
     new Style({
@@ -136,26 +112,25 @@ const featureStyle = () => {
   ];
 };
 
-const sendNewEvent = () => {
-  axios
-    .post("add-event", {
-      type: "wcy",
-      beginDate: Date("11-11-2023"),
-      endDate: Date("12-11-2023"),
-      frequency: "week",
-      title: "rfejiorfe",
-      description: "iedtrfuhgnsiuojhngf9pios",
-      coordinates: coors,
-      author: "me",
-      placeName: "Sztab",
-    })
-    .then((res) => {
-      res.forEach((b) => {});
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-};
+const overrideStyleFunction = (feature, style) => {
+  const clusteredFeatures = feature.get("features");
+  const size = clusteredFeatures.length;
+
+  const color = size > 20 ? "192,0,0" : size > 8 ? "255,128,0" : "0,128,0";
+  const radius = Math.max(8, Math.min(size, 20));
+  const dash = (2 * Math.PI * radius) / 6;
+  const calculatedDash = [0, dash, dash, dash, dash, dash, dash];
+
+  style.getImage().getStroke().setLineDash(dash);
+  style
+    .getImage()
+    .getStroke()
+    .setColor("rgba(" + color + ",0.5)");
+  style.getImage().getStroke().setLineDash(calculatedDash);
+  style
+    .getImage()
+    .getFill()
+    .setColor("rgba(" + color + ",1)");
 
   style.getImage().setRadius(radius);
 
@@ -163,7 +138,17 @@ const sendNewEvent = () => {
   return style;
 };
 
-const featureSelected = (event) => {
-  console.log(event);
+const geoLocChange = (event) => {
+  console.log("AAAAA", event);
+  position.value = event.target.getPosition();
+  view.value?.setCenter(event.target?.getPosition());
+};
+
+const manageClick = (event) => {
+  if (getCoords.value) {
+    getCoords.value = false;
+    console.log("works!", event.coordinate);
+    emit("gotLocation", { coordinates: event.coordinate });
+  }
 };
 </script>
