@@ -1,58 +1,54 @@
-from pymongo import MongoClient
-from typing import list
-import os
+from fastapi import Query
+from typing import List
 
-# Konfiguracja połączenia z bazą danych MongoDB
-client = MongoClient('mongodb://localhost:27017/')
-db = client['Baza']
-collection = db['wiadomosci']
+# Przykładowe dane (dummy data)
+dummy_files = [
+    {"id": 1, "nazwa": "plik1.txt", "format": "txt"},
+    {"id": 2, "nazwa": "plik2.pdf", "format": "pdf"},
+    {"id": 3, "nazwa": "plik3.jpg", "format": "jpg"}
+]
 
-def pobierzListePlikow(nazwa_przedmiotu: str, nazwa_projektu: str):
-    # Pobieranie listy plików z bazy danych
-    query = {
-        'nazwa_projektu': nazwa_projektu,
-        'nazwa_przedmiotu': nazwa_przedmiotu
-    }
-    message = collection.find_one(query)
-    if message:
-        notatki = message['notatki']
-        file_list = [notatka['content'] for notatka in notatki]
-        return {"files": file_list}
-    else:
-        return {"files": []}
+dummy_messages = [
+    {"id": 1, "tresc": "Wiadomość 1", "data": "2023-05-20"},
+    {"id": 2, "tresc": "Wiadomość 2", "data": "2023-05-21"},
+    {"id": 3, "tresc": "Wiadomość 3", "data": "2023-05-22"}
+]
 
-def pobierzListeWiadomosci(nazwa_przedmiotu: str, nazwa_projektu: str):
-    pass
+dummy_projects = [
+    {"id": 1, "nazwa": "Projekt 1"},
+    {"id": 2, "nazwa": "Projekt 2"},
+    {"id": 3, "nazwa": "Projekt 3"}
+]
 
-def pobierzListeProjektow():
-    pass
+def pobierzListePlikow(nazwa_przedmiotu: str, nazwa_projektu: str) -> List[dict]:
+    # Logika pobierania listy plików z bazy danych
+    # Zwróć listę plików lub pustą listę, jeśli brak wyników
+    return []
 
-@app.get("/api/get-files/")
-async def get_files(NazwaPrzedmiotu: str, NazwaProjektu: str):
-    collection = db["wiadomosci"]
-    notatki = collection.find({"nazwa_przedmiotu": NazwaPrzedmiotu, "nazwa_projektu": NazwaProjektu})
-    return list(notatki)
+def pobierzListeWiadomosci(nazwa_przedmiotu: str, nazwa_projektu: str) -> List[dict]:
+    # Logika pobierania listy wiadomości z bazy danych
+    # Zwróć listę wiadomości lub pustą listę, jeśli brak wyników
+    return []
 
-@app.get("/api/get-message/")
-async def get_message(NazwaPrzedmiotu: str, NazwaProjektu: str):
-    collection = db["wiadomosci"]
-    notatki = collection.find({"nazwa_przedmiotu": NazwaPrzedmiotu, "nazwa_projektu": NazwaProjektu, "format": "text"})
-    return list(notatki)
+def pobierzListeProjektow() -> List[dict]:
+    # Logika pobierania listy projektów z bazy danych
+    # Zwróć listę projektów lub pustą listę, jeśli brak wyników
+    return []
 
-@app.get("/api/get-all-projects-id/")
-async def get_all_projects_id():
-    collection = db["wiadomosci"]
-    przedmioty = collection.distinct("nazwa_przedmiotu")
-    return list(przedmioty)
+def get_files(nazwa_przedmiotu: str, nazwa_projektu: str):
+    files = pobierzListePlikow(nazwa_przedmiotu, nazwa_projektu)
+    if not files:
+        files = dummy_files  # Użyj przykładowych danych, jeśli brak wyników
+    return {"files": files}
 
-@app.get("/api/get-project-id/")
-async def get_project_id(NazwaPrzedmiotu: str):
-    collection = db["wiadomosci"]
-    projekty = collection.distinct("nazwa_projektu", {"nazwa_przedmiotu": NazwaPrzedmiotu})
-    return list(projekty)
+def get_message(nazwa_przedmiotu: str, nazwa_projektu: str):
+    messages = pobierzListeWiadomosci(nazwa_przedmiotu, nazwa_projektu)
+    if not messages:
+        messages = dummy_messages  # Użyj przykładowych danych, jeśli brak wyników
+    return {"messages": messages}
 
-@app.get("/api/get-user-id/")
-async def get_user_id():
-    collection = db["Uzykownik"]
-    users = collection.find({}, {"_id": 1, "nazwa_użytkownika": 1})
-    return list(users)
+def get_all_projects():
+    projects = pobierzListeProjektow()
+    if not projects:
+        projects = dummy_projects  # Użyj przykładowych danych, jeśli brak wyników
+    return {"projects": projects}

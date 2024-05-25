@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, Query, UploadFile, Form
 from typing import Annotated
 from pydantic import BaseModel
 from post_handler import wyslanieWiadmosciPost, dodajNazweProjektu, dodajNazwePrzedmiotu
-from get_handler import pobierzListePlikow, pobierzListeWiadomosci, pobierzListeProjektow
+from get_handler import get_files, get_message, get_all_projects
 
 app = FastAPI()
 
@@ -29,25 +29,22 @@ async def add_przedmiot_name(
     return {"message": result}
 
 @app.get("/api/get-files/")
-async def get_files(
-    nazwa_przedmiotu: Annotated[str, Form()],
-    nazwa_projektu: Annotated[str, Form()]
+async def get_files_endpoint(
+    nazwa_przedmiotu: str = Query(...),
+    nazwa_projektu: str = Query(...)
 ):
-    files = pobierzListePlikow(nazwa_przedmiotu, nazwa_projektu)
-    return {"files": files}
+    return get_files(nazwa_przedmiotu, nazwa_projektu)
 
-@app.get("/api/get-messege/")
-async def get_message(
-    nazwa_przedmiotu: Annotated[str, Form()],
-    nazwa_projektu: Annotated[str, Form()]
+@app.get("/api/get-message/")
+async def get_message_endpoint(
+    nazwa_przedmiotu: str = Query(...),
+    nazwa_projektu: str = Query(...)
 ):
-    messages = pobierzListeWiadomosci(nazwa_przedmiotu, nazwa_projektu)
-    return {"messages": messages}
+    return get_message(nazwa_przedmiotu, nazwa_projektu)
 
 @app.get("/api/get-all-projects/")
-async def get_all_projects():
-    projects = pobierzListeProjektow()
-    return {"projects": projects}
+async def get_all_projects_endpoint():
+    return get_all_projects()
 
 if __name__ == "__main__":
     import uvicorn
