@@ -1,19 +1,19 @@
 import { defineStore } from 'pinia'
+import axios from 'axios'
 
-export const useCounterStore = defineStore('counter', {
+export const usePointsStore = defineStore('points', {
   state: () => ({
-    counter: 0
+    points: [],
   }),
 
-  getters: {
-    doubleCount (state) {
-      return state.counter * 2
-    }
-  },
-
   actions: {
-    increment () {
-      this.counter++
-    }
-  }
+    // async fetchPoints() {
+    //   try {
+    //     const response = await axios.get('/api/points')
+    //     this.points = response.data
+    //   } catch (error) {
+    //     console.error('Błąd podczas pobierania punktów:', error)
+    //   }
+    // },
+  },
 })
