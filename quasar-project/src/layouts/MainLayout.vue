@@ -45,6 +45,7 @@
               color="primary"
               text-color="white"
               label="Dodaj"
+              class="q-mx-md"
               @click="addDialogShow()"
             />
             <q-btn
@@ -112,15 +113,21 @@
               </template>
             </q-input>
           </div>
+          <div>
+            <q-radio v-model="driveType" val="Przyjazd" label="Przyjazd" />
+            <q-radio v-model="driveType" val="Odjazd" label="Odjazd" />
+          </div>
           <q-btn
             color="primary"
             text-color="white"
             label="Pokaż"
             @click="driveShow()"
           />
+
         </q-expansion-item>
+        <OgloszenieJson></OgloszenieJson>
       </div>
-      <!-------------Formularz nowego punkt--------------------->
+      <!-------------Formularz nowego punktu --------------------->
       <q-dialog v-model="isAddDialogShow">
         <q-card>
           <q-card-section>
@@ -427,7 +434,9 @@ import { onMounted } from "vue";
 import { Style, Stroke, Circle, Fill } from "ol/style";
 import { altKeyOnly, click, pointerMove } from "ol/events/condition.js";
 
+import OgloszenieJson from "../components/OgloszenieJson.vue"
 ////////////////SIDEBAR//////////////////////////////
+let driveType = ref("");
 const group = ref(["ogloszenia"]);
 let isAddDialogShow = ref(false);
 let isRemoveDialogShow = ref(false);
@@ -474,8 +483,6 @@ async function driveShow() {
       console.error("Otrzymane dane nie są tablicą:", data);
       przejazdy = []; // Przypisz pustą tablicę, jeśli dane są niepoprawne
     }
-
-    console.log(przejazdy);
   } catch (error) {
     console.error("Błąd podczas pobierania danych:", error);
   }
