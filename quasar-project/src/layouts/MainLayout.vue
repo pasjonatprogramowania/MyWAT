@@ -126,7 +126,7 @@
 
         </q-expansion-item>
       </div>
-      <!-------------Formularz nowego punkt--------------------->
+      <!-------------Formularz nowego punktu --------------------->
       <q-dialog v-model="isAddDialogShow">
         <q-card>
           <q-card-section>
@@ -260,11 +260,10 @@
       </q-dialog>
 
       <q-dialog v-model="isEditDialogShow" no-esc-dismiss no-backdrop-dismiss>
-        <!--    Dodac v-for który wyswielti wszystkie rzeczy dodane-->
         <q-list>
           <q-card>
             <q-card-section>
-              <q-item>Test</q-item>
+              <q-item>Brak Przejazdów</q-item>
               <q-btn @click="editDialogHide()"></q-btn>
             </q-card-section>
           </q-card>
@@ -425,7 +424,7 @@ let objToSend = ref({
   recursiveWeekDay: "",
   author: "",
 });
-const server = "https://thick-icons-sip.loca.lt/api";
+const server = "http://localhost:8080/api";
 
 var przejazdy = [];
 
@@ -451,8 +450,6 @@ async function driveShow() {
       console.error("Otrzymane dane nie są tablicą:", data);
       przejazdy = []; // Przypisz pustą tablicę, jeśli dane są niepoprawne
     }
-
-    console.log(przejazdy);
   } catch (error) {
     console.error("Błąd podczas pobierania danych:", error);
   }
@@ -554,7 +551,6 @@ const fetchPoints = async () => {
     for (const g of group.value) {
       params.append('typ', g);
     }
-    console.log(params.toString());
     const response = await axios.get(server + "/get-all-events/", {
       params: params,
     });
@@ -643,7 +639,6 @@ const sendNewEvent = () => {
     .toISOString()
     .slice(0, 19)
     .replace("T", " ");
-  console.log(group.value);
   formData.append("type", group.value[0]);
   formData.append("startDateTime", startDateTime);
   formData.append("endDateTime", endDateTime);
