@@ -38,7 +38,7 @@
         <q-expansion-item
           expand-separator
           icon="place"
-          label="Dodawanie punktów"
+          label="Dodawanie wydarzeń"
         >
           <div class="q-pa-sm">
             <q-btn
