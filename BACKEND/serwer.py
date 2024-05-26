@@ -2,7 +2,7 @@ import datetime
 from fastapi import FastAPI, Form, Query
 from typing import Annotated, List
 from post_handler import createOgloszenie, modifyOgloszenie, usunOgloszenie, createPrzejazd, modifyPrzejazd, usunPrzejazd
-from get_handler import get_all_events
+from get_handler import get_all_events, get_all_przejazdy
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
@@ -66,6 +66,10 @@ async def get_events(typ: Annotated[list[str], Query()] = None):
     if typ is None:
         typ = []
     return get_all_events(typ)
+
+@app.get("/api/get-all-przejazdy/")
+async def get_przejazdy():
+    return get_all_przejazdy()
 
 if __name__ == "__main__":
     import uvicorn
