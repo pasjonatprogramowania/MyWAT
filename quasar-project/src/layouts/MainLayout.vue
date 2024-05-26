@@ -15,12 +15,342 @@
       </q-toolbar>
     </q-header>
 
+    <!------------------SIDEBAR----------------------->
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <SidebarCheck @addPoint="console.log('add')"></SidebarCheck>
-    </q-drawer>
+      <div class="q-pa-lg">
+        <h5>Opcje</h5>
+        <q-list bordered class="prounded-borders">
+          <q-expansion-item
+            expand-separator
+            icon="event"
+            label="Typ wydarzenia"
+          >
+            <q-option-group
+              v-model="group"
+              :options="options"
+              color="primary"
+              class="q-pa-sm"
+              type="checkbox"
+            />
+          </q-expansion-item>
+        </q-list>
+        <q-expansion-item
+          expand-separator
+          icon="place"
+          label="Dodawanie punktów"
+        >
+          <div class="q-pa-sm">
+            <q-btn
+              color="primary"
+              text-color="white"
+              label="Dodaj"
+              @click="addDialogShow()"
+            />
+            <q-btn
+              color="primary"
+              text-color="white"
+              label="Usuń"
+              @click="removeDialogShow()"
+            />
+            <q-btn
+              color="primary"
+              text-color="white"
+              label="Popraw"
+              @click="editDialogShow()"
+            />
+          </div>
+        </q-expansion-item>
+        <q-expansion-item
+          class="q-pa-sm"
+          expand-separator
+          icon="local_shipping"
+          label="Przejazdy"
+        >
+          <div class="q-pa-md" style="max-width: 300px">
+            <q-input filled v-model="objToSend.date">
+              <template v-slot:prepend>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy
+                    cover
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <q-date v-model="date" mask="YYYY-MM-DD HH:mm">
+                      <div class="row items-center justify-end">
+                        <q-btn
+                          v-close-popup
+                          label="Close"
+                          color="primary"
+                          flat
+                        />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
 
+              <template v-slot:append>
+                <q-icon name="access_time" class="cursor-pointer">
+                  <q-popup-proxy
+                    cover
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <q-time v-model="date" mask="YYYY-MM-DD HH:mm" format24h>
+                      <div class="row items-center justify-end">
+                        <q-btn
+                          v-close-popup
+                          label="Close"
+                          color="primary"
+                          flat
+                        />
+                      </div>
+                    </q-time>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+          <q-btn
+            color="primary"
+            text-color="white"
+            label="Pokaż"
+            @click="driveShow()"
+          />
+        </q-expansion-item>
+      </div>
+      <q-dialog v-model="isAddDialogShow" no-esc-dismiss>
+        <q-card>
+          <q-card-section>
+            <h5>Dodaj Punkt</h5>
+            <div>
+              <q-input v-model="objToSend.name" label="Nazwa"></q-input>
+              <q-input v-model="objToSend.description" label="Opis"></q-input>
+              <q-input
+                v-model="objToSend.link"
+                label="Link do szczegółów"
+              ></q-input>
+
+              <q-input
+                v-model="objToSend.cordinats[0]"
+                label="Współrzedne (Długość)"
+              ></q-input>
+              <q-input
+                v-model="objToSend.cordinats[1]"
+                label="Współrzedne (Szerokość)"
+              ></q-input>
+              <q-btn @click="enableCoords = true" color="primary"
+                >Ustaw punkt</q-btn
+              >
+              <div class="q-pa-md" style="max-width: 300px">
+                <q-input filled v-model="objToSend.date">
+                  <template v-slot:prepend>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy
+                        cover
+                        transition-show="scale"
+                        transition-hide="scale"
+                      >
+                        <q-date
+                          v-model="objToSend.date"
+                          mask="YYYY-MM-DD HH:mm"
+                        >
+                          <div class="row items-center justify-end">
+                            <q-btn
+                              v-close-popup
+                              label="Close"
+                              color="primary"
+                              flat
+                            />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+
+                  <template v-slot:append>
+                    <q-icon name="access_time" class="cursor-pointer">
+                      <q-popup-proxy
+                        cover
+                        transition-show="scale"
+                        transition-hide="scale"
+                      >
+                        <q-time
+                          v-model="objToSend.date"
+                          mask="YYYY-MM-DD HH:mm"
+                          format24h
+                        >
+                          <div class="row items-center justify-end">
+                            <q-btn
+                              v-close-popup
+                              label="Close"
+                              color="primary"
+                              flat
+                            />
+                          </div>
+                        </q-time>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
+
+              <q-checkbox
+                v-model="objToSend.isRecursive"
+                label="Czy jest powtarzalne?"
+              ></q-checkbox>
+              <q-item>
+                <q-item-section v-if="objToSend.isRecursive">
+                  <q-radio
+                    v-model="objToSend.recursiveWeekDay"
+                    val="poniedziałek"
+                    label="poniedziałek"
+                  ></q-radio>
+                  <q-radio
+                    v-model="objToSend.recursiveWeekDay"
+                    val="wtorek"
+                    label="wtorek"
+                  ></q-radio>
+                  <q-radio
+                    v-model="objToSend.recursiveWeekDay"
+                    val="sroda"
+                    label="sroda"
+                  ></q-radio>
+                  <q-radio
+                    v-model="objToSend.recursiveWeekDay"
+                    val="czwartek"
+                    label="czwartek"
+                  ></q-radio>
+                  <q-radio
+                    v-model="objToSend.recursiveWeekDay"
+                    val="piatek"
+                    label="piatek"
+                  ></q-radio>
+                  <q-radio
+                    v-model="objToSend.recursiveWeekDay"
+                    val="sobota"
+                    label="sobota"
+                  ></q-radio>
+                  <q-radio
+                    v-model="objToSend.recursiveWeekDay"
+                    val="niedziela"
+                    label="niedziela"
+                  ></q-radio>
+                </q-item-section>
+              </q-item>
+              <q-btn @click="addDialogHide()" color="primary"
+                >Dodaj punkt</q-btn
+              >
+              <q-btn @click="addDialogHide()" color="primary">Zamknij</q-btn>
+            </div>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+      <q-dialog v-model="isRemoveDialogShow" no-esc-dismiss no-backdrop-dismiss>
+        <!--    Dodac v-for który wyswielti wszystkie rzeczy dodane-->
+        <q-card>
+          <q-card-section>
+            <q-list>
+              <q-item>Test</q-item>
+              <q-btn @click="removeDialogHide()"></q-btn>
+            </q-list>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+      <q-dialog v-model="isEditDialogShow" no-esc-dismiss no-backdrop-dismiss>
+        <!--    Dodac v-for który wyswielti wszystkie rzeczy dodane-->
+        <q-list>
+          <q-card>
+            <q-card-section>
+              <q-item>Test</q-item>
+              <q-btn @click="editDialogHide()"></q-btn>
+            </q-card-section>
+          </q-card>
+        </q-list>
+      </q-dialog>
+      <q-dialog v-model="isDriveShow" no-esc-dismiss no-backdrop-dismiss>
+        <q-card>
+          <!--    Dodac v-for który wyswielti wszystkie rzeczy dodane-->
+          <q-card-section>
+            <q-item>Test</q-item>
+            <q-btn @click="driveHide()"></q-btn>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+    </q-drawer>
+    <q-banner
+      v-show="enableCoords"
+      inline-actions
+      rounded
+      class="bg-orange text-white"
+    >
+      Wskaż punkt na mapie
+    </q-banner>
+    <!-----------------------MAP----------------------->
     <q-page-container>
-      <index-page :what-to-show="req" />
+      <ol-map
+        :loadTilesWhileAnimating="true"
+        :loadTilesWhileInteracting="true"
+        :style="{
+          height: '90vh',
+          zIndex: -1,
+        }"
+        @click.prevent="manageClick($event)"
+      >
+        <ol-view
+          ref="view"
+          :center="center"
+          :rotation="rotation"
+          :zoom="zoom"
+          :projection="projection"
+        />
+
+        <ol-tile-layer>
+          <ol-source-osm />
+        </ol-tile-layer>
+
+        <ol-interaction-clusterselect
+          :pointRadius="2"
+          :featureStyle="featureStyle"
+        >
+          <!-- style of the marked selected from the cluster items after first click on the cluster itself -->
+          <ol-style>
+            <ol-style-icon :src="markerIcon" :scale="0.05"></ol-style-icon>
+          </ol-style>
+        </ol-interaction-clusterselect>
+
+        <ol-animated-clusterlayer :animationDuration="50" :distance="40">
+          <ol-source-vector ref="vectorsource">
+            <ol-feature v-for="point in points" :key="point._id">
+              <ol-geom-point
+                :coordinates="[
+                  parseFloat(point.longitude),
+                  parseFloat(point.latitude),
+                ]"
+              ></ol-geom-point>
+            </ol-feature>
+          </ol-source-vector>
+
+          <ol-style :overrideStyleFunction="overrideStyleFunction">
+            <ol-style-stroke color="red" :width="2"></ol-style-stroke>
+            <ol-style-fill color="rgba(255,255,255,0.1)"></ol-style-fill>
+
+            <ol-style-circle :radius="20">
+              <ol-style-stroke
+                color="black"
+                :width="15"
+                :lineDash="[]"
+                lineCap="butt"
+              ></ol-style-stroke>
+              <ol-style-fill color="black"></ol-style-fill>
+            </ol-style-circle>
+
+            <ol-style-text>
+              <ol-style-fill color="white"></ol-style-fill>
+            </ol-style-text>
+          </ol-style>
+        </ol-animated-clusterlayer>
+      </ol-map>
     </q-page-container>
   </q-layout>
 </template>
@@ -30,25 +360,164 @@ import IndexPage from "src/pages/IndexPage.vue";
 import axios from "axios";
 import { ref } from "vue";
 import SidebarCheck from "components/SidebarCheck.vue";
-
+import { onMounted } from "vue";
+////////////////SIDEBAR//////////////////////////////
+const group = ref(["kz"]);
+let isAddDialogShow = ref(false);
+let isRemoveDialogShow = ref(false);
+let isEditDialogShow = ref(false);
+let isDriveShow = ref(false);
+let objToSend = ref({
+  name: "",
+  description: "",
+  link: "",
+  location: "",
+  cordinats: [],
+  date: Date(),
+  isRecursive: false,
+  recursiveWeekDay: "",
+});
+function driveShow() {
+  isDriveShow.value = true;
+}
+function driveHide() {
+  isDriveShow.value = false;
+}
+function addDialogShow() {
+  isAddDialogShow.value = true;
+}
+function addDialogHide() {
+  isAddDialogShow.value = false;
+}
+function removeDialogShow() {
+  isRemoveDialogShow.value = true;
+}
+function removeDialogHide() {
+  isRemoveDialogShow.value = false;
+}
+function editDialogShow() {
+  isEditDialogShow.value = true;
+}
+function editDialogHide() {
+  isEditDialogShow.value = false;
+}
+const options = ref([
+  {
+    label: "Koła zainteresowań ",
+    value: "kz",
+  },
+  {
+    label: "Imprezy eventy watowe",
+    value: "iw",
+  },
+  {
+    label: "Ogłoszenia",
+    value: "og",
+  },
+]);
+////////////////MAP///////////////////////////
+onMounted(() => {
+  fetchPoints();
+});
 defineOptions({
   name: "MainLayout",
 });
 
+const center = ref([20.89958, 52.25318]);
+const projection = ref("EPSG:4326");
+const zoom = ref(15);
+const view = ref();
+const rotation = ref(0);
+const position = ref([]);
+
+const points = ref([]);
+
+const featureStyle = () => {
+  return [
+    new Style({
+      stroke: new Stroke({
+        color: "#ab34c4",
+        width: 2,
+        lineDash: [5, 5],
+      }),
+      image: new Circle({
+        radius: 5,
+        stroke: new Stroke({
+          color: "#ab34c4",
+          width: 1,
+        }),
+        fill: new Fill({
+          color: "#ab34c444",
+        }),
+      }),
+    }),
+  ];
+};
+
+const fetchPoints = async () => {
+  try {
+    const response = await axios.get(
+      "https://busy-socks-tan.loca.lt/api/get-all-events/",
+      {
+        params: {
+          typ: ["ogloszenia"],
+        },
+        paramsSerializer: (params) => {
+          return new URLSearchParams(params).toString();
+        },
+      }
+    );
+    const data = JSON.parse(response.data);
+    console.log(data);
+    points.value = data.filter((point) => point.longitude && point.latitude);
+  } catch (error) {
+    console.error("Error fetching points:", error);
+  }
+};
+
+const overrideStyleFunction = (feature, style) => {
+  const clusteredFeatures = feature.get("features");
+  const size = clusteredFeatures.length;
+
+  const color = size > 20 ? "192,0,0" : size > 8 ? "255,128,0" : "0,128,0";
+  const radius = Math.max(8, Math.min(size, 20));
+  const dash = (2 * Math.PI * radius) / 6;
+  const calculatedDash = [0, dash, dash, dash, dash, dash, dash];
+
+  style.getImage().getStroke().setLineDash(dash);
+  style
+    .getImage()
+    .getStroke()
+    .setColor("rgba(" + color + ",0.5)");
+  style.getImage().getStroke().setLineDash(calculatedDash);
+  style
+    .getImage()
+    .getFill()
+    .setColor("rgba(" + color + ",1)");
+
+  style.getImage().setRadius(radius);
+
+  style.getText().setText(size.toString());
+  return style;
+};
+
+const geoLocChange = (event) => {
+  console.log("AAAAA", event);
+  position.value = event.target.getPosition();
+  view.value?.setCenter(event.target?.getPosition());
+};
+
+let enableCoords = ref(false);
+
+const manageClick = (event) => {
+  if (enableCoords.value) {
+    console.log("Clicked coordinates:", event.coordinate);
+    objToSend.value.cordinats = event.coordinate;
+    enableCoords.value = false;
+  }
+};
+///////////////////////////POINT FORM/////////////////////////////////////
 const leftDrawerOpen = ref(false);
-
-localStorage.setItem(
-  "event",
-  JSON.stringify({
-    types: [],
-    points: [],
-    date: Date,
-  })
-);
-
-localStorage.setItem("getLocation", "false");
-localStorage.setItem("getData", "false");
-localStorage.setItem("getTypes", "false");
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
