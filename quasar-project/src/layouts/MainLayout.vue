@@ -45,6 +45,7 @@
               color="primary"
               text-color="white"
               label="Dodaj"
+              class="q-mx-md"
               @click="addDialogShow()"
             />
             <q-btn
@@ -112,12 +113,17 @@
               </template>
             </q-input>
           </div>
+          <div>
+            <q-radio v-model="driveType" val="Przyjazd" label="Przyjazd" />
+            <q-radio v-model="driveType" val="Odjazd" label="Odjazd" />
+          </div>
           <q-btn
             color="primary"
             text-color="white"
             label="Pokaż"
             @click="driveShow()"
           />
+
         </q-expansion-item>
       </div>
       <!-------------Formularz nowego punkt--------------------->
@@ -401,6 +407,7 @@ import { onMounted } from "vue";
 import { Style, Stroke, Circle, Fill } from "ol/style";
 
 ////////////////SIDEBAR//////////////////////////////
+let driveType = ref("");
 const group = ref(["ogloszenia"]);
 let isAddDialogShow = ref(false);
 let isRemoveDialogShow = ref(false);
