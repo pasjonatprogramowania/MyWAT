@@ -19,7 +19,7 @@
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <div class="q-pa-lg">
         <h5>Opcje</h5>
-        <q-list bordered class="prounded-borders">
+        <q-list class="prounded-borders">
           <q-expansion-item
             expand-separator
             icon="event"
@@ -57,7 +57,6 @@
           </div>
         </q-expansion-item>
         <q-expansion-item
-          class="q-pa-sm"
           expand-separator
           icon="local_shipping"
           label="Przejazdy"
@@ -382,11 +381,7 @@
 
         <ol-animated-clusterlayer :animationDuration="50" :distance="40">
           <ol-source-vector ref="vectorsource">
-            <ol-feature
-              v-for="point in points"
-              :key="point._id"
-              :geometryOrProperties="{ id: point._id }"
-            >
+            <ol-feature v-for="point in points" :key="point._id">
               <ol-geom-point
                 :coordinates="[
                   parseFloat(point.longitude),
@@ -400,14 +395,14 @@
             <ol-style-stroke color="red" :width="2"></ol-style-stroke>
             <ol-style-fill color="rgba(255,255,255,0.1)"></ol-style-fill>
 
-            <ol-style-circle :radius="20">
+            <ol-style-circle :radius="10">
               <ol-style-stroke
-                color="black"
-                :width="15"
+                color="yellow"
+                :width="10"
                 :lineDash="[]"
                 lineCap="butt"
               ></ol-style-stroke>
-              <ol-style-fill color="black"></ol-style-fill>
+              <ol-style-fill color="yellow"></ol-style-fill>
             </ol-style-circle>
             <ol-interaction-select
               @select="onPointSelect($event)"
@@ -416,17 +411,17 @@
               <ol-style>
                 <ol-style-stroke color="yellow" :width="10"></ol-style-stroke>
                 <ol-style-fill color="rgba(255,255,0,0.5)"></ol-style-fill>
-                <ol-style-circle :radius="20">
+                <ol-style-circle :radius="10">
                   <ol-style-stroke
-                    color="black"
-                    :width="15"
+                    color="yellow"
+                    :width="10"
                     :lineDash="[]"
                     lineCap="butt"
                   ></ol-style-stroke>
-                  <ol-style-fill color="black"></ol-style-fill>
                 </ol-style-circle>
               </ol-style>
             </ol-interaction-select>
+
             <ol-style-text>
               <ol-style-fill color="white"></ol-style-fill>
             </ol-style-text>
@@ -467,7 +462,7 @@ let objToSend = ref({
   recursiveWeekDay: "",
   author: "",
 });
-const server = "https://quiet-pears-build.loca.lt/api";
+const server = "https://thin-wings-tan.loca.lt/api";
 
 const isShowedEvent = ref(false);
 const showedEvent = ref({});
@@ -569,10 +564,26 @@ const markerIcon = "/src/assets/location-pin.svg";
 
 const points = ref([
   {
-    _id: "2343",
-    title: "erusfns0os",
-    longitude: 22,
-    latitude: 52,
+    id: 432,
+    _id: 234,
+    latitude: 6846509,
+    longitude: 2325880,
+    title: "Sprzedam auto",
+    description: "fe",
+    author: "Mariusz",
+    startDateTime: Date(),
+    type: "iw",
+  },
+  {
+    id: 32,
+    _id: 432,
+    latitude: 6846509,
+    longitude: 2275880,
+    title: "Sprzedam lodówkę",
+    description: "ew",
+    author: "Oliwier",
+    startDateTime: Date(),
+    type: "ogloszenie",
   },
 ]);
 
@@ -616,6 +627,7 @@ const fetchPoints = async () => {
 
 function onPointSelect(event) {
   const frame = event.mapBrowserEvent.frameState.extent;
+  console.log(frame);
   const point = points.value.find(
     (p) =>
       frame[0] <= p.longitude &&
@@ -623,6 +635,7 @@ function onPointSelect(event) {
       frame[1] <= p.latitude &&
       p.latitude <= frame[3]
   );
+  console.log(point);
   isShowedEvent.value = true;
   showedEvent.value = point;
 }
@@ -661,6 +674,7 @@ const geoLocChange = (event) => {
 
 const selectConditions = inject("ol-selectconditions");
 const selectCondition = selectConditions.click;
+
 const manageClick = (event) => {
   if (enableCoords.value) {
     console.log("Clicked coordinates:", event.coordinate);
