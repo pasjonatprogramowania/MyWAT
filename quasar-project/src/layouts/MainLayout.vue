@@ -123,7 +123,6 @@
             label="Pokaż"
             @click="driveShow()"
           />
-
         </q-expansion-item>
         <OgloszenieJson></OgloszenieJson>
       </div>
@@ -309,7 +308,13 @@
       <q-list>
         <q-card>
           <q-card-section>
-            <q-item>{{ showedEvent.title }}</q-item>
+            <div class="text-h6">{{ showedEvent.title }}</div>
+            <q-item caption>Author: {{ showedEvent.author }}</q-item>
+            <q-item>Link: {{ showedEvent.link }}</q-item>
+            <q-item>Czas rozpoczęcia{{ showedEvent.startDateTime }}</q-item>
+            <q-item v-show="showedEvent.isRecursive"
+              >Wydarzenie jest cykliczne</q-item
+            >
           </q-card-section>
         </q-card>
       </q-list>
@@ -409,9 +414,17 @@
               :condition="selectCondition"
             >
               <ol-style>
-                <ol-style-stroke color="green" :width="10"></ol-style-stroke>
-                <ol-style-fill color="rgba(255,255,255,0.5)"></ol-style-fill>
-                <ol-style-icon :src="markerIcon" :scale="0.05"></ol-style-icon>
+                <ol-style-stroke color="yellow" :width="10"></ol-style-stroke>
+                <ol-style-fill color="rgba(255,255,0,0.5)"></ol-style-fill>
+                <ol-style-circle :radius="20">
+                  <ol-style-stroke
+                    color="black"
+                    :width="15"
+                    :lineDash="[]"
+                    lineCap="butt"
+                  ></ol-style-stroke>
+                  <ol-style-fill color="black"></ol-style-fill>
+                </ol-style-circle>
               </ol-style>
             </ol-interaction-select>
             <ol-style-text>
@@ -434,7 +447,7 @@ import { onMounted } from "vue";
 import { Style, Stroke, Circle, Fill } from "ol/style";
 import { altKeyOnly, click, pointerMove } from "ol/events/condition.js";
 
-import OgloszenieJson from "../components/OgloszenieJson.vue"
+import OgloszenieJson from "../components/OgloszenieJson.vue";
 ////////////////SIDEBAR//////////////////////////////
 let driveType = ref("");
 const group = ref(["ogloszenia"]);
@@ -454,7 +467,7 @@ let objToSend = ref({
   recursiveWeekDay: "",
   author: "",
 });
-const server = "https://proud-weeks-argue.loca.lt/api";
+const server = "https://quiet-pears-build.loca.lt/api";
 
 const isShowedEvent = ref(false);
 const showedEvent = ref({});
@@ -481,7 +494,7 @@ async function driveShow() {
       }));
     } else {
       console.error("Otrzymane dane nie są tablicą:", data);
-      przejazdy = []; 
+      przejazdy = [];
     }
   } catch (error) {
     console.error("Błąd podczas pobierania danych:", error);
