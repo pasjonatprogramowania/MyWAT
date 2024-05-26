@@ -15,70 +15,97 @@
       </q-toolbar>
     </q-header>
 
-    <!------------------SIDEBAR----------------------->
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <div class="q-pa-lg">
-        <h5>Opcje</h5>
-        <q-list bordered class="prounded-borders">
-          <q-expansion-item
-            expand-separator
-            icon="event"
-            label="Typ wydarzenia"
-          >
-            <q-option-group
-              v-model="group"
-              :options="options"
-              @update:model-value="fetchPoints"
-              color="primary"
-              class="q-pa-sm"
-              type="checkbox"
-            />
-          </q-expansion-item>
-        </q-list>
-        <q-expansion-item
-          expand-separator
-          icon="place"
-          label="Dodawanie wydarzeń"
-        >
-          <div class="q-pa-sm">
-            <q-btn
-              color="primary"
-              text-color="white"
-              label="Dodaj"
-              class="q-mx-md"
-              @click="addDialogShow()"
-            />
-            <q-btn
-              color="primary"
-              text-color="white"
-              label="Usuń"
-              @click="removeDialogShow()"
-            />
-          </div>
-        </q-expansion-item>
-        <q-expansion-item
+<!------------------SIDEBAR----------------------->
+<q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+  <div class="q-pa-lg">
+    <h5>Opcje</h5>
+
+    <!-- Typ wydarzenia -->
+    <q-list bordered class="prounded-borders">
+      <q-expansion-item expand-separator icon="event" label="Typ wydarzenia">
+        <q-option-group
+          v-model="group"
+          :options="options"
+          @update:model-value="fetchPoints"
+          color="primary"
           class="q-pa-sm"
-          expand-separator
-          icon="local_shipping"
-          label="Przejazdy"
-        >
+          type="checkbox"
+        />
+      </q-expansion-item>
+    </q-list>
+
+    <!-- Dodawanie i usuwanie wydarzeń -->
+    <q-expansion-item expand-separator icon="place" label="Dodawanie wydarzeń">
+      <div class="q-pa-sm">
+        <q-btn color="primary" text-color="white" label="Dodaj" class="q-mx-md" @click="addDialogShow()" />
+        <q-btn color="primary" text-color="white" label="Usuń" @click="removeDialogShow()" />
+      </div>
+    </q-expansion-item>
+
+    <!-- Przejazdy -->
+    <q-expansion-item class="q-pa-sm" expand-separator icon="local_shipping" label="Przejazdy">
+      <div class="q-pa-md" style="max-width: 300px">
+        <q-input filled v-model="objToSend.date">
+          <template v-slot:prepend>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                <q-date v-model="date" mask="YYYY-MM-DD HH:mm">
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Close" color="primary" flat />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+
+          <template v-slot:append>
+            <q-icon name="access_time" class="cursor-pointer">
+              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                <q-time v-model="date" mask="YYYY-MM-DD HH:mm" format24h>
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Close" color="primary" flat />
+                    <q-btn v-close-popup label="Okay" color="primary" flat />
+                  </div>
+                </q-time>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </q-input>
+      </div>
+      <div>
+        <q-radio v-model="driveType" val="Przyjazd" label="Przyjazd" />
+        <q-radio v-model="driveType" val="Odjazd" label="Odjazd" />
+      </div>
+      <q-btn color="primary" text-color="white" label="Pokaż" @click="driveShow()" />
+    </q-expansion-item>
+
+    <!-- Ogłoszenia -->
+    <OgloszenieJson></OgloszenieJson>
+  </div>
+
+  <!-------------Formularz nowego punktu --------------------->
+  <q-dialog v-model="isAddDialogShow">
+    <q-card>
+      <q-card-section>
+        <h5>Dodaj Punkt</h5>
+        <div>
+          <q-input v-model="objToSend.name" label="Nazwa"></q-input>
+          <q-input v-model="objToSend.description" label="Opis"></q-input>
+          <q-input v-model="objToSend.author" label="Autor"></q-input>
+          <q-input v-model="objToSend.link" label="Link do szczegółów"></q-input>
+          <q-input v-model="objToSend.location" label="Nazwa lokalizacji"></q-input>
+          <q-input disable v-model="objToSend.cordinats[0]" label="Współrzedne (Długość)"></q-input>
+          <q-input disable v-model="objToSend.cordinats[1]" label="Współrzedne (Szerokość)"></q-input>
+          <q-btn @click="enablePointingCoors" color="primary">Ustaw punkt</q-btn>
+
           <div class="q-pa-md" style="max-width: 300px">
             <q-input filled v-model="objToSend.date">
               <template v-slot:prepend>
                 <q-icon name="event" class="cursor-pointer">
-                  <q-popup-proxy
-                    cover
-                    transition-show="scale"
-                    transition-hide="scale"
-                  >
-                    <q-date v-model="date" mask="YYYY-MM-DD HH:mm">
+                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                    <q-date v-model="objToSend.date" mask="YYYY-MM-DD HH:mm">
                       <div class="row items-center justify-end">
-                        <q-btn
-                          v-close-popup
-                          label="Close"
-                          color="primary"
-                          flat
-                        />
+                        <q-btn v-close-popup label="Close" color="primary" flat />
                       </div>
                     </q-date>
                   </q-popup-proxy>
@@ -87,25 +114,10 @@
 
               <template v-slot:append>
                 <q-icon name="access_time" class="cursor-pointer">
-                  <q-popup-proxy
-                    cover
-                    transition-show="scale"
-                    transition-hide="scale"
-                  >
-                    <q-time v-model="date" mask="YYYY-MM-DD HH:mm" format24h>
+                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                    <q-time v-model="objToSend.date" mask="YYYY-MM-DD HH:mm" format24h>
                       <div class="row items-center justify-end">
-                        <q-btn
-                          v-close-popup
-                          label="Close"
-                          color="primary"
-                          flat
-                        />
-                        <q-btn
-                          v-close-popup
-                          label="Okay"
-                          color="primary"
-                          flat
-                        />
+                        <q-btn v-close-popup label="Close" color="primary" flat />
                       </div>
                     </q-time>
                   </q-popup-proxy>
@@ -113,223 +125,80 @@
               </template>
             </q-input>
           </div>
-          <div>
-            <q-radio v-model="driveType" val="Przyjazd" label="Przyjazd" />
-            <q-radio v-model="driveType" val="Odjazd" label="Odjazd" />
-          </div>
-          <q-btn
-            color="primary"
-            text-color="white"
-            label="Pokaż"
-            @click="driveShow()"
-          />
 
-        </q-expansion-item>
-        <OgloszenieJson></OgloszenieJson>
-      </div>
-      <!-------------Formularz nowego punktu --------------------->
-      <q-dialog v-model="isAddDialogShow">
-        <q-card>
-          <q-card-section>
-            <h5>Dodaj Punkt</h5>
-            <div>
-              <q-input v-model="objToSend.name" label="Nazwa"></q-input>
-              <q-input v-model="objToSend.description" label="Opis"></q-input>
-              <q-input v-model="objToSend.author" label="Autor"></q-input>
-              <q-input
-                v-model="objToSend.link"
-                label="Link do szczegółów"
-              ></q-input>
+          <q-checkbox v-model="objToSend.isRecursive" label="Czy jest powtarzalne?"></q-checkbox>
+          <q-item>
+            <q-item-section v-if="objToSend.isRecursive">
+              <q-radio v-model="objToSend.recursiveWeekDay" val="poniedziałek" label="poniedziałek"></q-radio>
+              <q-radio v-model="objToSend.recursiveWeekDay" val="wtorek" label="wtorek"></q-radio>
+              <q-radio v-model="objToSend.recursiveWeekDay" val="sroda" label="sroda"></q-radio>
+              <q-radio v-model="objToSend.recursiveWeekDay" val="czwartek" label="czwartek"></q-radio>
+              <q-radio v-model="objToSend.recursiveWeekDay" val="piatek" label="piatek"></q-radio>
+              <q-radio v-model="objToSend.recursiveWeekDay" val="sobota" label="sobota"></q-radio>
+              <q-radio v-model="objToSend.recursiveWeekDay" val="niedziela" label="niedziela"></q-radio>
+            </q-item-section>
+          </q-item>
+          <q-btn @click="sendNewEvent()" color="primary">Dodaj</q-btn>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 
-              <q-input
-                v-model="objToSend.location"
-                label="Nazwa lokalizacji"
-              ></q-input>
-              <q-input
-                disable
-                v-model="objToSend.cordinats[0]"
-                label="Współrzedne (Długość)"
-              ></q-input>
-              <q-input
-                disable
-                v-model="objToSend.cordinats[1]"
-                label="Współrzedne (Szerokość)"
-              ></q-input>
-              <q-btn @click="enablePointingCoors" color="primary"
-                >Ustaw punkt</q-btn
-              >
-              <div class="q-pa-md" style="max-width: 300px">
-                <q-input filled v-model="objToSend.date">
-                  <template v-slot:prepend>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-date
-                          v-model="objToSend.date"
-                          mask="YYYY-MM-DD HH:mm"
-                        >
-                          <div class="row items-center justify-end">
-                            <q-btn
-                              v-close-popup
-                              label="Close"
-                              color="primary"
-                              flat
-                            />
-                          </div>
-                        </q-date>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
+  <!-- Okno dialogowe edycji -->
+  <q-dialog v-model="isEditDialogShow" no-esc-dismiss no-backdrop-dismiss>
+    <q-list>
+      <q-card>
+        <q-card-section>
+          <q-item>Test</q-item>
+          <q-btn @click="editDialogHide()"></q-btn>
+        </q-card-section>
+      </q-card>
+    </q-list>
+  </q-dialog>
 
-                  <template v-slot:append>
-                    <q-icon name="access_time" class="cursor-pointer">
-                      <q-popup-proxy
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-time
-                          v-model="objToSend.date"
-                          mask="YYYY-MM-DD HH:mm"
-                          format24h
-                        >
-                          <div class="row items-center justify-end">
-                            <q-btn
-                              v-close-popup
-                              label="Close"
-                              color="primary"
-                              flat
-                            />
-                          </div>
-                        </q-time>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-              </div>
-
-              <q-checkbox
-                v-model="objToSend.isRecursive"
-                label="Czy jest powtarzalne?"
-              ></q-checkbox>
-              <q-item>
-                <q-item-section v-if="objToSend.isRecursive">
-                  <q-radio
-                    v-model="objToSend.recursiveWeekDay"
-                    val="poniedziałek"
-                    label="poniedziałek"
-                  ></q-radio>
-                  <q-radio
-                    v-model="objToSend.recursiveWeekDay"
-                    val="wtorek"
-                    label="wtorek"
-                  ></q-radio>
-                  <q-radio
-                    v-model="objToSend.recursiveWeekDay"
-                    val="sroda"
-                    label="sroda"
-                  ></q-radio>
-                  <q-radio
-                    v-model="objToSend.recursiveWeekDay"
-                    val="czwartek"
-                    label="czwartek"
-                  ></q-radio>
-                  <q-radio
-                    v-model="objToSend.recursiveWeekDay"
-                    val="piatek"
-                    label="piatek"
-                  ></q-radio>
-                  <q-radio
-                    v-model="objToSend.recursiveWeekDay"
-                    val="sobota"
-                    label="sobota"
-                  ></q-radio>
-                  <q-radio
-                    v-model="objToSend.recursiveWeekDay"
-                    val="niedziela"
-                    label="niedziela"
-                  ></q-radio>
-                </q-item-section>
-              </q-item>
-              <q-btn @click="sendNewEvent()" color="primary">Dodaj</q-btn>
-            </div>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-
-      <q-dialog v-model="isEditDialogShow" no-esc-dismiss no-backdrop-dismiss>
-        <!--    Dodac v-for który wyswielti wszystkie rzeczy dodane-->
+  <!-- Okno dialogowe przejazdów -->
+  <q-dialog v-model="isDriveShow" no-esc-dismiss no-backdrop-dismiss>
+    <q-card>
+      <q-card-section>
         <q-list>
-          <q-card>
-            <q-card-section>
-              <q-item>Test</q-item>
-              <q-btn @click="editDialogHide()"></q-btn>
-            </q-card-section>
-          </q-card>
+          <q-item v-for="przejazd in przejazdy" :key="przejazd.id">
+            <q-item-section>
+              <q-item-label>{{ przejazd.name }}</q-item-label>
+              <q-item-label caption>Data: {{ formatDate(przejazd.DateTime) }}</q-item-label>
+              <q-item-label caption>Opis: {{ przejazd.description }}</q-item-label>
+              <q-item-label caption>Początek trasy: {{ przejazd.startLocation }}</q-item-label>
+              <q-item-label caption>Koniec trasy: {{ przejazd.endLocation }}</q-item-label>
+              <q-item-label caption>Organizator: {{ przejazd.creator }}</q-item-label>
+              <q-item-label caption>Liczba pasażerów: {{ przejazd.passengerNum }}</q-item-label>
+            </q-item-section>
+          </q-item>
         </q-list>
-      </q-dialog>
-      <q-dialog v-model="isDriveShow" no-esc-dismiss no-backdrop-dismiss>
-        <q-card>
-          <q-card-section>
-            <q-list>
-              <q-item v-for="przejazd in przejazdy" :key="przejazd.id">
-                <q-item-section>
-                  <q-item-label>{{ przejazd.name }}</q-item-label>
-                  <q-item-label caption
-                    >Data: {{ formatDate(przejazd.DateTime) }}</q-item-label
-                  >
-                  <q-item-label caption
-                    >Opis: {{ przejazd.description }}</q-item-label
-                  >
-                  <q-item-label caption
-                    >Początek trasy: {{ przejazd.startLocation }}</q-item-label
-                  >
-                  <q-item-label caption
-                    >Koniec trasy: {{ przejazd.endLocation }}</q-item-label
-                  >
-                  <q-item-label caption
-                    >Organizator: {{ przejazd.creator }}</q-item-label
-                  >
-                  <q-item-label caption
-                    >Liczba pasażerów: {{ przejazd.passengerNum }}</q-item-label
-                  >
-                </q-item-section>
-              </q-item>
-            </q-list>
-            <q-btn @click="driveHide()">Zamknij</q-btn>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-    </q-drawer>
-    <q-dialog v-model="isShowedEvent" no-esc-dismiss>
-      <!--    Dodac v-for który wyswielti wszystkie rzeczy dodane-->
-      <q-list>
-        <q-card>
-          <q-card-section>
-            <q-item>{{ showedEvent.title }}</q-item>
-          </q-card-section>
-        </q-card>
-      </q-list>
-    </q-dialog>
-    <q-banner
-      v-show="isRemoveDialogShow"
-      inline-actions
-      rounded
-      class="bg-red text-white"
-    >
-      Usunięto punkt z mapy!
-    </q-banner>
-    <q-banner
-      v-show="enableCoords"
-      inline-actions
-      rounded
-      class="bg-orange text-white"
-    >
-      Wskaż punkt na mapie
-    </q-banner>
+        <q-btn @click="driveHide()">Zamknij</q-btn>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+</q-drawer>
+
+<!-- Okno dialogowe wyświetlania wydarzenia -->
+<q-dialog v-model="isShowedEvent" no-esc-dismiss>
+  <q-list>
+    <q-card>
+      <q-card-section>
+        <q-item>{{ showedEvent.title }}</q-item>
+      </q-card-section>
+    </q-card>
+  </q-list>
+</q-dialog>
+
+<!-- Komunikat o usunięciu punktu -->
+<q-banner v-show="isRemoveDialogShow" inline-actions rounded class="bg-red text-white">
+  Usunięto punkt z mapy!
+</q-banner>
+
+<!-- Komunikat o wskazywaniu punktu na mapie -->
+<q-banner v-show="enableCoords" inline-actions rounded class="bg-orange text-white">
+  Wskaż punkt na mapie
+</q-banner>
     <!-----------------------MAP----------------------->
     <q-page-container>
       <ol-map
