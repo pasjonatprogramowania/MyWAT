@@ -11,7 +11,7 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title> WATEventor </q-toolbar-title>
+        <q-toolbar-title> MyWAT </q-toolbar-title>
       </q-toolbar>
     </q-header>
 
@@ -297,6 +297,16 @@
         </q-card>
       </q-dialog>
     </q-drawer>
+    <q-dialog v-model="isShowedEvent" no-esc-dismiss>
+      <!--    Dodac v-for który wyswielti wszystkie rzeczy dodane-->
+      <q-list>
+        <q-card>
+          <q-card-section>
+            <q-item>{{ showedEvent.title }}</q-item>
+          </q-card-section>
+        </q-card>
+      </q-list>
+    </q-dialog>
     <q-banner
       v-show="isRemoveDialogShow"
       inline-actions
@@ -360,7 +370,11 @@
 
         <ol-animated-clusterlayer :animationDuration="50" :distance="40">
           <ol-source-vector ref="vectorsource">
-            <ol-feature v-for="point in points" :key="point._id">
+            <ol-feature
+              v-for="point in points"
+              :key="point._id"
+              :geometryOrProperties="{ id: point._id }"
+            >
               <ol-geom-point
                 :coordinates="[
                   parseFloat(point.longitude),
@@ -383,7 +397,16 @@
               ></ol-style-stroke>
               <ol-style-fill color="black"></ol-style-fill>
             </ol-style-circle>
-
+            <ol-interaction-select
+              @select="onPointSelect($event)"
+              :condition="selectCondition"
+            >
+              <ol-style>
+                <ol-style-stroke color="green" :width="10"></ol-style-stroke>
+                <ol-style-fill color="rgba(255,255,255,0.5)"></ol-style-fill>
+                <ol-style-icon :src="markerIcon" :scale="0.05"></ol-style-icon>
+              </ol-style>
+            </ol-interaction-select>
             <ol-style-text>
               <ol-style-fill color="white"></ol-style-fill>
             </ol-style-text>
@@ -396,9 +419,13 @@
 
 <script setup>
 import axios from "axios";
-import { ref } from "vue";
+import { ref, inject } from "vue";
+import Select from "ol/interaction/Select.js";
+import VectorLayer from "ol/layer/Vector.js";
+import VectorSource from "ol/source/Vector.js";
 import { onMounted } from "vue";
 import { Style, Stroke, Circle, Fill } from "ol/style";
+import { altKeyOnly, click, pointerMove } from "ol/events/condition.js";
 
 ////////////////SIDEBAR//////////////////////////////
 const group = ref(["ogloszenia"]);
@@ -418,7 +445,10 @@ let objToSend = ref({
   recursiveWeekDay: "",
   author: "",
 });
-const server = "https://thick-icons-sip.loca.lt/api";
+const server = "https://proud-weeks-argue.loca.lt/api";
+
+const isShowedEvent = ref(false);
+const showedEvent = ref({});
 
 var przejazdy = [];
 
@@ -517,7 +547,14 @@ const rotation = ref(0);
 const position = ref([]);
 const markerIcon = "/src/assets/location-pin.svg";
 
-const points = ref([]);
+const points = ref([
+  {
+    _id: "2343",
+    title: "erusfns0os",
+    longitude: 22,
+    latitude: 52,
+  },
+]);
 
 const featureStyle = () => {
   return [
@@ -545,25 +582,36 @@ const fetchPoints = async () => {
   try {
     const params = new URLSearchParams();
     for (const g of group.value) {
-      params.append('typ', g);
+      params.append("typ", g);
     }
-    console.log(params.toString());
     const response = await axios.get(server + "/get-all-events/", {
       params: params,
     });
     const data = JSON.parse(response.data);
-    console.log(data);
     points.value = data.filter((point) => point.longitude && point.latitude);
   } catch (error) {
     console.error("Error fetching points:", error);
   }
 };
 
+function onPointSelect(event) {
+  const frame = event.mapBrowserEvent.frameState.extent;
+  const point = points.value.find(
+    (p) =>
+      frame[0] <= p.longitude &&
+      p.longitude <= frame[2] &&
+      frame[1] <= p.latitude &&
+      p.latitude <= frame[3]
+  );
+  isShowedEvent.value = true;
+  showedEvent.value = point;
+}
+
 const overrideStyleFunction = (feature, style) => {
   const clusteredFeatures = feature.get("features");
   const size = clusteredFeatures.length;
 
-  const color = size > 20 ? "192,0,0" : size > 8 ? "255,128,0" : "0,128,0";
+  const color = "0,128,0";
   const radius = Math.max(8, Math.min(size, 20));
   const dash = (2 * Math.PI * radius) / 6;
   const calculatedDash = [0, dash, dash, dash, dash, dash, dash];
@@ -591,6 +639,8 @@ const geoLocChange = (event) => {
   view.value?.setCenter(event.target?.getPosition());
 };
 
+const selectConditions = inject("ol-selectconditions");
+const selectCondition = selectConditions.click;
 const manageClick = (event) => {
   if (enableCoords.value) {
     console.log("Clicked coordinates:", event.coordinate);
