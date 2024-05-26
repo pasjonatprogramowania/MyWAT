@@ -467,7 +467,7 @@ let objToSend = ref({
   recursiveWeekDay: "",
   author: "",
 });
-const server = "https://quiet-pears-build.loca.lt/api";
+const server = "http://localhost:8080/api";
 
 const isShowedEvent = ref(false);
 const showedEvent = ref({});
