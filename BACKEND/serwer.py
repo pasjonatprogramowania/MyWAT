@@ -1,15 +1,26 @@
 import datetime
-from fastapi import FastAPI, Form
+from fastapi import FastAPI, Form, Query
 from typing import Annotated, List
 from post_handler import createOgloszenie, modifyOgloszenie, usunOgloszenie, createPrzejazd, modifyPrzejazd, usunPrzejazd
 from get_handler import get_all_events
-
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 from fastapi import FastAPI, Form
 from typing import Annotated, Dict
 from datetime import datetime
+# Konfiguracja CORS
+origins = [
+    "http://localhost:9000",
+]
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 @app.post("/api/post-add-event/")
 async def add_event(id: Annotated[int, Form()], type: Annotated[str, Form()], startDateTime: Annotated[datetime, Form()], 
                     endDateTime: Annotated[datetime, Form()], recurrence: Annotated[str, Form()], name: Annotated[str, Form()], 
@@ -51,7 +62,9 @@ async def remove_przejazd(id: Annotated[int, Form()]):
     return result
 
 @app.get("/api/get-all-events/")
-async def get_events(typ: Annotated[list[str], Form()]):
+async def get_events(typ: Annotated[list[str], Query()] = None):
+    if typ is None:
+        typ = []
     return get_all_events(typ)
 
 if __name__ == "__main__":

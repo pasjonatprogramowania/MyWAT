@@ -11,10 +11,9 @@ from bson import json_util
 import json
 
 def get_all_events(typ: list[str]):
-    events = collection.find()
+    events = collection.find({"type": {"$in": typ}})
     eventy = []
     for event in events:
-        #typ ma wartosci ogloszenia , imprezy, koła zainteresowan
         event['_id'] = str(event['_id'])
         eventy.append(event)
     return json.dumps(eventy, default=json_util.default)
