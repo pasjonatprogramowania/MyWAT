@@ -459,14 +459,6 @@ const sendNewEvent = () => {
 
 ```
 
-
-### Podsumowanie i Dalsza Analiza
-
-
-
-Niniejsza dokumentacja ma na celu dostarczenie pełnego obrazu funkcjonowania aplikacji WATEventor, skupiając się na strukturze komponentów, logice działania i przepływie danych. Jeśli potrzebujesz dalszej analizy poszczególnych elementów kodu lub rozszerzenia dokumentacji, proszę daj znać!
-
-
 ## Technologie
 
 - 🐍 Backend: FastAPI (Python)
