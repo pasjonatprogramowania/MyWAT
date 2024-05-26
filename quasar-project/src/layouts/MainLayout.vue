@@ -542,14 +542,18 @@ const featureStyle = () => {
 
 const fetchPoints = async () => {
   try {
+    const params = {};
+    for (const g of group.value) {
+      params[`typ`] = params[`typ`] ? [...params[`typ`], g] : [g];
+    }
+
     const response = await axios.get(server + "/get-all-events/", {
-      params: {
-        typ: group,
-      },
+      params,
       paramsSerializer: (params) => {
         return new URLSearchParams(params).toString();
       },
     });
+
     const data = JSON.parse(response.data);
     console.log(data);
     points.value = data.filter((point) => point.longitude && point.latitude);
