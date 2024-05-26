@@ -450,7 +450,7 @@ async function driveShow() {
       }));
     } else {
       console.error("Otrzymane dane nie są tablicą:", data);
-      przejazdy = []; // Przypisz pustą tablicę, jeśli dane są niepoprawne
+      przejazdy = []; 
     }
   } catch (error) {
     console.error("Błąd podczas pobierania danych:", error);
@@ -515,8 +515,8 @@ defineOptions({
   name: "MainLayout",
 });
 
-const center = ref([20.89958, 52.25318]);
-const projection = ref("EPSG:4326");
+const center = ref([2325880.7921, 6846509.097]);
+const projection = ref("EPSG:3857");
 const zoom = ref(15);
 const view = ref();
 const rotation = ref(0);
