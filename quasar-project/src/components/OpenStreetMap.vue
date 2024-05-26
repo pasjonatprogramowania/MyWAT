@@ -29,17 +29,10 @@
 
     <ol-animated-clusterlayer :animationDuration="50" :distance="40">
       <ol-source-vector ref="vectorsource">
-        <ol-feature v-for="index in points.length" :key="index">
-          <ol-geom-point
-            :coordinates="[points[index - 1].x, points[index - 1].y]"
-          ></ol-geom-point>
+        <ol-feature v-for="point in points" :key="point._id">
+          <ol-geom-point :coordinates="[parseFloat(point.longitude), parseFloat(point.latitude)]"></ol-geom-point>
         </ol-feature>
       </ol-source-vector>
-
-      <!-- <ol-geolocation
-        :projection="projection"
-        @change:position="geoLocChange"
-      /> -->
 
       <ol-style :overrideStyleFunction="overrideStyleFunction">
         <ol-style-stroke color="red" :width="2"></ol-style-stroke>
@@ -67,7 +60,11 @@
 import { ref, inject, onMounted } from "vue";
 import { Style, Stroke, Circle, Fill } from "ol/style";
 import markerIcon from "../assets/location-pin.svg";
+import axios from 'axios';
 
+onMounted(() => {
+  fetchPoints();
+});
 defineOptions({
   name: "OpenStreetMap",
 });
@@ -81,20 +78,8 @@ const view = ref();
 const rotation = ref(0);
 const position = ref([]);
 
-const points = ref([
-  {
-    x: 21,
-    y: 52,
-  },
-  {
-    x: 21,
-    y: 52,
-  },
-  {
-    x: 21,
-    y: 52,
-  },
-]);
+const points = ref([]);
+
 const featureStyle = () => {
   return [
     new Style({
@@ -115,6 +100,23 @@ const featureStyle = () => {
       }),
     }),
   ];
+};
+
+const fetchPoints = async () => {
+  try {
+    const response = await axios.get('http://localhost:8080/api/get-all-events/', {
+      params: {
+        typ: ['ogloszenia']
+      },
+      paramsSerializer: params => {
+        return new URLSearchParams(params).toString();
+      }
+    });
+    const data = JSON.parse(response.data);
+    points.value = data.filter(point => point.longitude && point.latitude);
+  } catch (error) {
+    console.error('Error fetching points:', error);
+  }
 };
 
 const overrideStyleFunction = (feature, style) => {
@@ -152,10 +154,7 @@ const geoLocChange = (event) => {
 let getCoords = ref(false);
 
 const manageClick = (event) => {
-  if (localStorage.getItem("getLocation") == "true") {
-    getCoords.value = false;
-    console.log("works!", event.coordinate);
-    emit("gotLocation", { coordinates: event.coordinate });
-  }
+ console.log("Clicked coordinates:", event.coordinate);
+ emit("gotLocation", { coordinates: event.coordinate });
 };
 </script>
