@@ -1,3 +1,5 @@
+![github-header-image.png](Image/github-header-image.png)
+
 # MyWAT
 
 MyWAT to aplikacja internetowa zbudowana przy użyciu frameworka FastAPI w języku Python. Aplikacja ta służy jako interaktywna mapa uczelni, na której zainteresowani oraz uczelniani użytkownicy mogą umieszczać punkty zainteresowania, takie jak koła zainteresowań, sympozja, targi pracy itp.
