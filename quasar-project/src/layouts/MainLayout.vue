@@ -604,27 +604,25 @@ function clearForm() {
 
 const sendNewEvent = () => {
   addDialogHide();
+  const formData = new FormData();
+  formData.append("id", "423");
+  formData.append("type", group.value[0]);
+  formData.append("startDateTime", objToSend.value.date);
+  formData.append("endDateTime", objToSend.value.date);
+  formData.append("recurrence", objToSend.value.isRecursive.toString());
+  formData.append("name", objToSend.value.name);
+  formData.append("description", objToSend.value.description);
+  formData.append("location", objToSend.value.location);
+  formData.append("link", objToSend.value.link);
+  formData.append("creator", "Marcinek");
+  formData.append("latitude", objToSend.value.cordinats[1].toString());
+  formData.append("longitude", objToSend.value.cordinats[0].toString());
+
   axios
-    .post(
-      "https://sixty-ants-write.loca.lt/api/post-add-event/",
-      JSON.stringify({
-        id: 423,
-        type: group.value[0],
-        startDateTime: objToSend.value.date,
-        endDateTime: objToSend.value.date,
-        recurrence: objToSend.value.isRecursive,
-        name: objToSend.value.name,
-        description: objToSend.value.description,
-        location: objToSend.value.location,
-        link: objToSend.value.link,
-        creator: "Marcinek",
-        latitude: objToSend.value.cordinats[1],
-        longitude: objToSend.value.cordinats[0],
-      })
-    )
+    .post("https://sixty-ants-write.loca.lt/api/post-add-event/", formData)
     .then((res) => {
       clearForm();
-      res.forEach((b) => {});
+      // Handle the server response
     })
     .catch((err) => {
       console.error(err);
