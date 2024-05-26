@@ -6,7 +6,7 @@ db = client["Baza"]
 ogloszenia = db["Ogloszenia"]
 przejazdy = db["Przejazdy"]
 
-def createOgloszenie(id: int, type: str, startDateTime: datetime, endDateTime: datetime, recurrence: str,
+def createOgloszenie(id: int, type: str, startDateTime: str, endDateTime: str, recurrence: str,
                      name: str, description: str, location: str, link: str, creator: str, longitude: str, latitude: str):
     event_dict = {
         "id": id,

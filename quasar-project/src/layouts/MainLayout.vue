@@ -98,6 +98,12 @@
                           color="primary"
                           flat
                         />
+                        <q-btn
+                          v-close-popup
+                          label="Okay"
+                          color="primary"
+                          flat
+                        />
                       </div>
                     </q-time>
                   </q-popup-proxy>
@@ -253,14 +259,25 @@
         </q-list>
       </q-dialog>
       <q-dialog v-model="isDriveShow" no-esc-dismiss no-backdrop-dismiss>
-        <q-card>
-          <!--    Dodac v-for który wyswielti wszystkie rzeczy dodane-->
-          <q-card-section>
-            <q-item>Test</q-item>
-            <q-btn @click="driveHide()"></q-btn>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
+  <q-card>
+    <q-card-section>
+      <q-list>
+        <q-item v-for="przejazd in przejazdy" :key="przejazd.id">
+          <q-item-section>
+            <q-item-label>{{ przejazd.name }}</q-item-label>
+            <q-item-label caption>Data: {{ formatDate(przejazd.DateTime) }}</q-item-label>
+            <q-item-label caption>Opis: {{ przejazd.description }}</q-item-label>
+            <q-item-label caption>Początek trasy: {{ przejazd.startLocation }}</q-item-label>
+            <q-item-label caption>Koniec trasy: {{ przejazd.endLocation }}</q-item-label>
+            <q-item-label caption>Organizator: {{ przejazd.creator }}</q-item-label>
+            <q-item-label caption>Liczba pasażerów: {{ przejazd.passengerNum }}</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+      <q-btn @click="driveHide()">Zamknij</q-btn>
+    </q-card-section>
+  </q-card>
+</q-dialog>
     </q-drawer>
     <q-banner
       v-show="isRemoveDialogShow"
@@ -382,8 +399,41 @@ let objToSend = ref({
   recursiveWeekDay: "",
 });
 
-function driveShow() {
+var przejazdy = [];
+
+async function driveShow() {
+  try {
+    const response = await fetch('http://127.0.0.1:8080/api/get-all-przejazdy/');
+    const dataString = await response.text();
+    const decodedString = JSON.parse(dataString);
+    const data = JSON.parse(decodedString);
+
+    if (Array.isArray(data)) {
+      przejazdy = data.map(przejazd => ({
+        id: przejazd.id,
+        DateTime: formatDate(przejazd.DateTime.$date),
+        name: przejazd.name,
+        description: przejazd.description,
+        startLocation: przejazd.startLocation,
+        endLocation: przejazd.endLocation,
+        creator: przejazd.creator,
+        passengerNum: przejazd.passengerNum
+      }));
+    } else {
+      console.error('Otrzymane dane nie są tablicą:', data);
+      przejazdy = []; // Przypisz pustą tablicę, jeśli dane są niepoprawne
+    }
+
+    console.log(przejazdy);
+  } catch (error) {
+    console.error('Błąd podczas pobierania danych:', error);
+  }
   isDriveShow.value = true;
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toISOString().slice(0, 19).replace('T', ' ');
 }
 function driveHide() {
   isDriveShow.value = false;
@@ -472,6 +522,7 @@ const featureStyle = () => {
 const fetchPoints = async () => {
   try {
     const response = await axios.get(
+
       "https://sixty-ants-write.loca.lt/api/get-all-events/",
       {
         params: {
@@ -553,27 +604,25 @@ function clearForm() {
 
 const sendNewEvent = () => {
   addDialogHide();
+  const formData = new FormData();
+  formData.append("id", "423");
+  formData.append("type", group.value[0]);
+  formData.append("startDateTime", objToSend.value.date);
+  formData.append("endDateTime", objToSend.value.date);
+  formData.append("recurrence", objToSend.value.isRecursive.toString());
+  formData.append("name", objToSend.value.name);
+  formData.append("description", objToSend.value.description);
+  formData.append("location", objToSend.value.location);
+  formData.append("link", objToSend.value.link);
+  formData.append("creator", "Marcinek");
+  formData.append("latitude", objToSend.value.cordinats[1].toString());
+  formData.append("longitude", objToSend.value.cordinats[0].toString());
+
   axios
-    .post(
-      "https://sixty-ants-write.loca.lt/api/post-add-event/",
-      JSON.stringify({
-        id: 423,
-        type: group.value[0],
-        startDateTime: objToSend.value.date,
-        endDateTime: objToSend.value.date,
-        recurrence: objToSend.value.isRecursive,
-        name: objToSend.value.name,
-        description: objToSend.value.description,
-        location: objToSend.value.location,
-        link: objToSend.value.link,
-        creator: "Marcinek",
-        latitude: objToSend.value.cordinats[1],
-        longitude: objToSend.value.cordinats[0],
-      })
-    )
+    .post("https://sixty-ants-write.loca.lt/api/post-add-event/", formData)
     .then((res) => {
       clearForm();
-      res.forEach((b) => {});
+      // Handle the server response
     })
     .catch((err) => {
       console.error(err);
