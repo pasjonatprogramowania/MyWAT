@@ -11,7 +11,7 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title> Lekturer </q-toolbar-title>
+        <q-toolbar-title> WATEventor </q-toolbar-title>
       </q-toolbar>
     </q-header>
 
@@ -127,11 +127,16 @@
             <div>
               <q-input v-model="objToSend.name" label="Nazwa"></q-input>
               <q-input v-model="objToSend.description" label="Opis"></q-input>
+              <q-input v-model="objToSend.author" label="Autor"></q-input>
               <q-input
                 v-model="objToSend.link"
                 label="Link do szczegółów"
               ></q-input>
 
+              <q-input
+                v-model="objToSend.location"
+                label="Nazwa lokalizacji"
+              ></q-input>
               <q-input
                 disable
                 v-model="objToSend.cordinats[0]"
@@ -259,25 +264,37 @@
         </q-list>
       </q-dialog>
       <q-dialog v-model="isDriveShow" no-esc-dismiss no-backdrop-dismiss>
-  <q-card>
-    <q-card-section>
-      <q-list>
-        <q-item v-for="przejazd in przejazdy" :key="przejazd.id">
-          <q-item-section>
-            <q-item-label>{{ przejazd.name }}</q-item-label>
-            <q-item-label caption>Data: {{ formatDate(przejazd.DateTime) }}</q-item-label>
-            <q-item-label caption>Opis: {{ przejazd.description }}</q-item-label>
-            <q-item-label caption>Początek trasy: {{ przejazd.startLocation }}</q-item-label>
-            <q-item-label caption>Koniec trasy: {{ przejazd.endLocation }}</q-item-label>
-            <q-item-label caption>Organizator: {{ przejazd.creator }}</q-item-label>
-            <q-item-label caption>Liczba pasażerów: {{ przejazd.passengerNum }}</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-      <q-btn @click="driveHide()">Zamknij</q-btn>
-    </q-card-section>
-  </q-card>
-</q-dialog>
+        <q-card>
+          <q-card-section>
+            <q-list>
+              <q-item v-for="przejazd in przejazdy" :key="przejazd.id">
+                <q-item-section>
+                  <q-item-label>{{ przejazd.name }}</q-item-label>
+                  <q-item-label caption
+                    >Data: {{ formatDate(przejazd.DateTime) }}</q-item-label
+                  >
+                  <q-item-label caption
+                    >Opis: {{ przejazd.description }}</q-item-label
+                  >
+                  <q-item-label caption
+                    >Początek trasy: {{ przejazd.startLocation }}</q-item-label
+                  >
+                  <q-item-label caption
+                    >Koniec trasy: {{ przejazd.endLocation }}</q-item-label
+                  >
+                  <q-item-label caption
+                    >Organizator: {{ przejazd.creator }}</q-item-label
+                  >
+                  <q-item-label caption
+                    >Liczba pasażerów: {{ przejazd.passengerNum }}</q-item-label
+                  >
+                </q-item-section>
+              </q-item>
+            </q-list>
+            <q-btn @click="driveHide()">Zamknij</q-btn>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </q-drawer>
     <q-banner
       v-show="isRemoveDialogShow"
@@ -380,9 +397,10 @@
 import axios from "axios";
 import { ref } from "vue";
 import { onMounted } from "vue";
+import { Style, Stroke, Circle, Fill } from "ol/style";
 
 ////////////////SIDEBAR//////////////////////////////
-const group = ref(["kz"]);
+const group = ref(["ogloszenia"]);
 let isAddDialogShow = ref(false);
 let isRemoveDialogShow = ref(false);
 let isEditDialogShow = ref(false);
@@ -397,19 +415,21 @@ let objToSend = ref({
   date: Date(),
   isRecursive: false,
   recursiveWeekDay: "",
+  author: "",
 });
+const server = "https://itchy-kids-change.loca.lt/api";
 
 var przejazdy = [];
 
 async function driveShow() {
   try {
-    const response = await fetch('http://127.0.0.1:8080/api/get-all-przejazdy/');
+    const response = await fetch(server + "/get-all-przejazdy/");
     const dataString = await response.text();
     const decodedString = JSON.parse(dataString);
     const data = JSON.parse(decodedString);
 
     if (Array.isArray(data)) {
-      przejazdy = data.map(przejazd => ({
+      przejazdy = data.map((przejazd) => ({
         id: przejazd.id,
         DateTime: formatDate(przejazd.DateTime.$date),
         name: przejazd.name,
@@ -417,23 +437,23 @@ async function driveShow() {
         startLocation: przejazd.startLocation,
         endLocation: przejazd.endLocation,
         creator: przejazd.creator,
-        passengerNum: przejazd.passengerNum
+        passengerNum: przejazd.passengerNum,
       }));
     } else {
-      console.error('Otrzymane dane nie są tablicą:', data);
+      console.error("Otrzymane dane nie są tablicą:", data);
       przejazdy = []; // Przypisz pustą tablicę, jeśli dane są niepoprawne
     }
 
     console.log(przejazdy);
   } catch (error) {
-    console.error('Błąd podczas pobierania danych:', error);
+    console.error("Błąd podczas pobierania danych:", error);
   }
   isDriveShow.value = true;
 }
 
 function formatDate(dateString) {
   const date = new Date(dateString);
-  return date.toISOString().slice(0, 19).replace('T', ' ');
+  return date.toISOString().slice(0, 19).replace("T", " ");
 }
 function driveHide() {
   isDriveShow.value = false;
@@ -477,7 +497,7 @@ const options = ref([
   },
   {
     label: "Ogłoszenia",
-    value: "og",
+    value: "ogłoszenia",
   },
 ]);
 ////////////////MAP///////////////////////////
@@ -494,6 +514,7 @@ const zoom = ref(15);
 const view = ref();
 const rotation = ref(0);
 const position = ref([]);
+const markerIcon = "/src/assets/location-pin.svg";
 
 const points = ref([]);
 
@@ -521,18 +542,14 @@ const featureStyle = () => {
 
 const fetchPoints = async () => {
   try {
-    const response = await axios.get(
-
-      "https://sixty-ants-write.loca.lt/api/get-all-events/",
-      {
-        params: {
-          typ: ["ogloszenia"],
-        },
-        paramsSerializer: (params) => {
-          return new URLSearchParams(params).toString();
-        },
-      }
-    );
+    const response = await axios.get(server + "/get-all-events/", {
+      params: {
+        typ: group,
+      },
+      paramsSerializer: (params) => {
+        return new URLSearchParams(params).toString();
+      },
+    });
     const data = JSON.parse(response.data);
     console.log(data);
     points.value = data.filter((point) => point.longitude && point.latitude);
@@ -609,8 +626,14 @@ const sendNewEvent = () => {
   formData.append("type", group.value[0]);
 
   // Convert startDateTime and endDateTime to the desired format
-  const startDateTime = new Date(objToSend.value.date).toISOString().slice(0, 19).replace('T', ' ');
-  const endDateTime = new Date(objToSend.value.date).toISOString().slice(0, 19).replace('T', ' ');
+  const startDateTime = new Date(objToSend.value.date)
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ");
+  const endDateTime = new Date(objToSend.value.date)
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ");
 
   formData.append("startDateTime", startDateTime);
   formData.append("endDateTime", endDateTime);
@@ -618,20 +641,21 @@ const sendNewEvent = () => {
   formData.append("name", objToSend.value.name);
   formData.append("description", objToSend.value.description);
   formData.append("link", objToSend.value.link);
-  formData.append("creator", "Marcinek");
-  formData.append("location", "Sztab");
+  formData.append("creator", objToSend.value.author);
+  formData.append("location", objToSend.value.location);
   formData.append("latitude", objToSend.value.cordinats[1].toString());
   formData.append("longitude", objToSend.value.cordinats[0].toString());
 
   // Send the form data to the endpoint using axios
-  axios.post('http://127.0.0.1:8080/api/post-add-event/', formData)
-    .then(response => {
-      console.log('Form data sent successfully:', response.data);
+  axios
+    .post(server + "/post-add-event/", formData)
+    .then((response) => {
+      console.log("Form data sent successfully:", response.data);
       // Clear the form
       clearForm();
     })
-    .catch(error => {
-      console.error('Error sending form data:', error);
+    .catch((error) => {
+      console.error("Error sending form data:", error);
     });
 };
 </script>
