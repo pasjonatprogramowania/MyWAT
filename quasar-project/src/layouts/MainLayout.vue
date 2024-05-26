@@ -607,25 +607,31 @@ const sendNewEvent = () => {
   const formData = new FormData();
   formData.append("id", "423");
   formData.append("type", group.value[0]);
-  formData.append("startDateTime", objToSend.value.date);
-  formData.append("endDateTime", objToSend.value.date);
+
+  // Convert startDateTime and endDateTime to the desired format
+  const startDateTime = new Date(objToSend.value.date).toISOString().slice(0, 19).replace('T', ' ');
+  const endDateTime = new Date(objToSend.value.date).toISOString().slice(0, 19).replace('T', ' ');
+
+  formData.append("startDateTime", startDateTime);
+  formData.append("endDateTime", endDateTime);
   formData.append("recurrence", objToSend.value.isRecursive.toString());
   formData.append("name", objToSend.value.name);
   formData.append("description", objToSend.value.description);
-  formData.append("location", objToSend.value.location);
   formData.append("link", objToSend.value.link);
   formData.append("creator", "Marcinek");
+  formData.append("location", "Sztab");
   formData.append("latitude", objToSend.value.cordinats[1].toString());
   formData.append("longitude", objToSend.value.cordinats[0].toString());
 
-  axios
-    .post("https://sixty-ants-write.loca.lt/api/post-add-event/", formData)
-    .then((res) => {
+  // Send the form data to the endpoint using axios
+  axios.post('http://127.0.0.1:8080/api/post-add-event/', formData)
+    .then(response => {
+      console.log('Form data sent successfully:', response.data);
+      // Clear the form
       clearForm();
-      // Handle the server response
     })
-    .catch((err) => {
-      console.error(err);
+    .catch(error => {
+      console.error('Error sending form data:', error);
     });
 };
 </script>
