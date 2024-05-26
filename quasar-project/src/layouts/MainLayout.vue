@@ -125,6 +125,7 @@
           />
 
         </q-expansion-item>
+        <OgloszenieJson></OgloszenieJson>
       </div>
       <!-------------Formularz nowego punkt--------------------->
       <q-dialog v-model="isAddDialogShow">
@@ -260,7 +261,6 @@
       </q-dialog>
 
       <q-dialog v-model="isEditDialogShow" no-esc-dismiss no-backdrop-dismiss>
-        <!--    Dodac v-for który wyswielti wszystkie rzeczy dodane-->
         <q-list>
           <q-card>
             <q-card-section>
@@ -405,7 +405,7 @@ import axios from "axios";
 import { ref } from "vue";
 import { onMounted } from "vue";
 import { Style, Stroke, Circle, Fill } from "ol/style";
-
+import OgloszenieJson from "../components/OgloszenieJson.vue"
 ////////////////SIDEBAR//////////////////////////////
 let driveType = ref("");
 const group = ref(["ogloszenia"]);
@@ -425,7 +425,7 @@ let objToSend = ref({
   recursiveWeekDay: "",
   author: "",
 });
-const server = "https://thick-icons-sip.loca.lt/api";
+const server = "https://proud-weeks-argue.loca.lt/api";
 
 var przejazdy = [];
 
@@ -667,6 +667,14 @@ const sendNewEvent = () => {
     })
     .catch((error) => {
       console.error("Error sending form data:", error);
+      return [
+        {
+          _id: "2343",
+          title: "erusfns0os",
+          longitude: 22,
+          latitude: 52,
+        },
+      ];
     });
 };
 </script>
