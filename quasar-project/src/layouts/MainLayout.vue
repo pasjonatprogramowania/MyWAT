@@ -83,66 +83,92 @@
     <OgloszenieJson></OgloszenieJson>
   </div>
 
-  <!-------------Formularz nowego punktu --------------------->
-  <q-dialog v-model="isAddDialogShow">
-    <q-card>
-      <q-card-section>
-        <h5>Dodaj Punkt</h5>
-        <div>
-          <q-input v-model="objToSend.name" label="Nazwa"></q-input>
-          <q-input v-model="objToSend.description" label="Opis"></q-input>
-          <q-input v-model="objToSend.author" label="Autor"></q-input>
-          <q-input v-model="objToSend.link" label="Link do szczegółów"></q-input>
-          <q-input v-model="objToSend.location" label="Nazwa lokalizacji"></q-input>
-          <q-input disable v-model="objToSend.cordinats[0]" label="Współrzedne (Długość)"></q-input>
-          <q-input disable v-model="objToSend.cordinats[1]" label="Współrzedne (Szerokość)"></q-input>
-          <q-btn @click="enablePointingCoors" color="primary">Ustaw punkt</q-btn>
+<!-------------Formularz nowego punktu --------------------->
+<q-dialog v-model="isAddDialogShow">
+  <q-card>
+    <q-card-section>
+      <h5>Dodaj Punkt</h5>
+      <div>
+        <q-input v-model="objToSend.name" label="Nazwa"></q-input>
+        <q-input v-model="objToSend.description" label="Opis"></q-input>
+        <q-input v-model="objToSend.author" label="Autor"></q-input>
+        <q-input v-model="objToSend.link" label="Link do szczegółów"></q-input>
+        <q-input v-model="objToSend.location" label="Nazwa lokalizacji"></q-input>
+        <q-input disable v-model="objToSend.cordinats[0]" label="Współrzedne (Długość)"></q-input>
+        <q-input disable v-model="objToSend.cordinats[1]" label="Współrzedne (Szerokość)"></q-input>
+        <q-btn @click="enablePointingCoors" color="primary">Ustaw punkt</q-btn>
 
-          <div class="q-pa-md" style="max-width: 300px">
-            <q-input filled v-model="objToSend.date">
-              <template v-slot:prepend>
-                <q-icon name="event" class="cursor-pointer">
-                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-date v-model="objToSend.date" mask="YYYY-MM-DD HH:mm">
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Close" color="primary" flat />
-                      </div>
-                    </q-date>
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
+        <div class="q-pa-md" style="max-width: 300px">
+          <q-input filled v-model="objToSend.startDate" label="Od kiedy">
+            <template v-slot:prepend>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                  <q-date v-model="objToSend.startDate" mask="YYYY-MM-DD HH:mm">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
 
-              <template v-slot:append>
-                <q-icon name="access_time" class="cursor-pointer">
-                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-time v-model="objToSend.date" mask="YYYY-MM-DD HH:mm" format24h>
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Close" color="primary" flat />
-                      </div>
-                    </q-time>
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
-            </q-input>
-          </div>
+            <template v-slot:append>
+              <q-icon name="access_time" class="cursor-pointer">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                  <q-time v-model="objToSend.startDate" mask="YYYY-MM-DD HH:mm" format24h>
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-time>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
 
-          <q-checkbox v-model="objToSend.isRecursive" label="Czy jest powtarzalne?"></q-checkbox>
-          <q-item>
-            <q-item-section v-if="objToSend.isRecursive">
-              <q-radio v-model="objToSend.recursiveWeekDay" val="poniedziałek" label="poniedziałek"></q-radio>
-              <q-radio v-model="objToSend.recursiveWeekDay" val="wtorek" label="wtorek"></q-radio>
-              <q-radio v-model="objToSend.recursiveWeekDay" val="sroda" label="sroda"></q-radio>
-              <q-radio v-model="objToSend.recursiveWeekDay" val="czwartek" label="czwartek"></q-radio>
-              <q-radio v-model="objToSend.recursiveWeekDay" val="piatek" label="piatek"></q-radio>
-              <q-radio v-model="objToSend.recursiveWeekDay" val="sobota" label="sobota"></q-radio>
-              <q-radio v-model="objToSend.recursiveWeekDay" val="niedziela" label="niedziela"></q-radio>
-            </q-item-section>
-          </q-item>
-          <q-btn @click="sendNewEvent()" color="primary">Dodaj</q-btn>
+          <q-input filled v-model="objToSend.endDate" label="Do kiedy">
+            <template v-slot:prepend>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                  <q-date v-model="objToSend.endDate" mask="YYYY-MM-DD HH:mm">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+
+            <template v-slot:append>
+              <q-icon name="access_time" class="cursor-pointer">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                  <q-time v-model="objToSend.endDate" mask="YYYY-MM-DD HH:mm" format24h>
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-time>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
         </div>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
+
+        <q-checkbox v-model="objToSend.isRecursive" label="Czy jest powtarzalne?"></q-checkbox>
+        <q-item>
+          <q-item-section v-if="objToSend.isRecursive">
+            <q-radio v-model="objToSend.recursiveWeekDay" val="poniedziałek" label="poniedziałek"></q-radio>
+            <q-radio v-model="objToSend.recursiveWeekDay" val="wtorek" label="wtorek"></q-radio>
+            <q-radio v-model="objToSend.recursiveWeekDay" val="sroda" label="sroda"></q-radio>
+            <q-radio v-model="objToSend.recursiveWeekDay" val="czwartek" label="czwartek"></q-radio>
+            <q-radio v-model="objToSend.recursiveWeekDay" val="piatek" label="piatek"></q-radio>
+            <q-radio v-model="objToSend.recursiveWeekDay" val="sobota" label="sobota"></q-radio>
+            <q-radio v-model="objToSend.recursiveWeekDay" val="niedziela" label="niedziela"></q-radio>
+          </q-item-section>
+        </q-item>
+        <q-btn @click="sendNewEvent()" color="primary">Dodaj</q-btn>
+      </div>
+    </q-card-section>
+  </q-card>
+</q-dialog>
 
   <!-- Okno dialogowe edycji -->
   <q-dialog v-model="isEditDialogShow" no-esc-dismiss no-backdrop-dismiss>
