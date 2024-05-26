@@ -1,6 +1,6 @@
 import datetime
 from fastapi import FastAPI, Form, Query
-from typing import Annotated, List
+from typing import Annotated, List, Union
 from post_handler import createOgloszenie, modifyOgloszenie, usunOgloszenie, createPrzejazd, modifyPrzejazd, usunPrzejazd
 from get_handler import get_all_events, get_all_przejazdy
 from fastapi.middleware.cors import CORSMiddleware
@@ -62,7 +62,7 @@ async def remove_przejazd(id: Annotated[int, Form()]):
     return result
 
 @app.get("/api/get-all-events/")
-async def get_events(typ: Annotated[list[str], Query()] = None):
+async def get_events(typ: Annotated[Union[List[str], None], Query()] = None):
     if typ is None:
         typ = []
     return get_all_events(typ)
