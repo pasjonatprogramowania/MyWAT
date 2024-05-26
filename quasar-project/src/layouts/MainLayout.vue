@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header elevated v-show="!enableCoords && !isRemoveDialogShow">
       <q-toolbar>
         <q-btn
           flat
@@ -51,12 +51,6 @@
               text-color="white"
               label="Usuń"
               @click="removeDialogShow()"
-            />
-            <q-btn
-              color="primary"
-              text-color="white"
-              label="Popraw"
-              @click="editDialogShow()"
             />
           </div>
         </q-expansion-item>
@@ -125,7 +119,8 @@
           />
         </q-expansion-item>
       </div>
-      <q-dialog v-model="isAddDialogShow" no-esc-dismiss>
+      <!-------------Formularz nowego punkt--------------------->
+      <q-dialog v-model="isAddDialogShow">
         <q-card>
           <q-card-section>
             <h5>Dodaj Punkt</h5>
@@ -138,14 +133,16 @@
               ></q-input>
 
               <q-input
+                disable
                 v-model="objToSend.cordinats[0]"
                 label="Współrzedne (Długość)"
               ></q-input>
               <q-input
+                disable
                 v-model="objToSend.cordinats[1]"
                 label="Współrzedne (Szerokość)"
               ></q-input>
-              <q-btn @click="enableCoords = true" color="primary"
+              <q-btn @click="enablePointingCoors" color="primary"
                 >Ustaw punkt</q-btn
               >
               <div class="q-pa-md" style="max-width: 300px">
@@ -244,25 +241,12 @@
                   ></q-radio>
                 </q-item-section>
               </q-item>
-              <q-btn @click="addDialogHide()" color="primary"
-                >Dodaj punkt</q-btn
-              >
-              <q-btn @click="addDialogHide()" color="primary">Zamknij</q-btn>
+              <q-btn @click="sendNewEvent()" color="primary">Dodaj</q-btn>
             </div>
           </q-card-section>
         </q-card>
       </q-dialog>
-      <q-dialog v-model="isRemoveDialogShow" no-esc-dismiss no-backdrop-dismiss>
-        <!--    Dodac v-for który wyswielti wszystkie rzeczy dodane-->
-        <q-card>
-          <q-card-section>
-            <q-list>
-              <q-item>Test</q-item>
-              <q-btn @click="removeDialogHide()"></q-btn>
-            </q-list>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
+
       <q-dialog v-model="isEditDialogShow" no-esc-dismiss no-backdrop-dismiss>
         <!--    Dodac v-for który wyswielti wszystkie rzeczy dodane-->
         <q-list>
@@ -296,6 +280,14 @@
 </q-dialog>
     </q-drawer>
     <q-banner
+      v-show="isRemoveDialogShow"
+      inline-actions
+      rounded
+      class="bg-red text-white"
+    >
+      Usunięto punkt z mapy!
+    </q-banner>
+    <q-banner
       v-show="enableCoords"
       inline-actions
       rounded
@@ -325,7 +317,19 @@
         <ol-tile-layer>
           <ol-source-osm />
         </ol-tile-layer>
-
+        <ol-vector-layer>
+          <ol-source-vector>
+            <ol-feature>
+              <ol-geom-point :coordinates="objToSend.cordinats"></ol-geom-point>
+              <ol-style>
+                <ol-style-circle :radius="7">
+                  <ol-style-fill color="white"></ol-style-fill>
+                  <ol-style-stroke color="red" :width="3"></ol-style-stroke>
+                </ol-style-circle>
+              </ol-style>
+            </ol-feature>
+          </ol-source-vector>
+        </ol-vector-layer>
         <ol-interaction-clusterselect
           :pointRadius="2"
           :featureStyle="featureStyle"
@@ -373,17 +377,17 @@
 </template>
 
 <script setup>
-import IndexPage from "src/pages/IndexPage.vue";
 import axios from "axios";
 import { ref } from "vue";
-import SidebarCheck from "components/SidebarCheck.vue";
 import { onMounted } from "vue";
+
 ////////////////SIDEBAR//////////////////////////////
 const group = ref(["kz"]);
 let isAddDialogShow = ref(false);
 let isRemoveDialogShow = ref(false);
 let isEditDialogShow = ref(false);
 let isDriveShow = ref(false);
+let enableCoords = ref(false);
 let objToSend = ref({
   name: "",
   description: "",
@@ -424,7 +428,6 @@ async function driveShow() {
   } catch (error) {
     console.error('Błąd podczas pobierania danych:', error);
   }
-
   isDriveShow.value = true;
 }
 
@@ -443,16 +446,26 @@ function addDialogHide() {
 }
 function removeDialogShow() {
   isRemoveDialogShow.value = true;
+  leftDrawerOpen.value = false;
+  setTimeout(() => {
+    isRemoveDialogShow.value = false;
+    leftDrawerOpen.value = true;
+  }, 2000);
+  objToSend.value.cordinats = [];
 }
-function removeDialogHide() {
-  isRemoveDialogShow.value = false;
+
+function enablePointingCoors() {
+  enableCoords.value = true;
+  leftDrawerOpen.value = false;
+  isAddDialogShow.value = false;
 }
-function editDialogShow() {
-  isEditDialogShow.value = true;
+
+function disablePointingCoors() {
+  enableCoords.value = false;
+  leftDrawerOpen.value = true;
+  isAddDialogShow.value = true;
 }
-function editDialogHide() {
-  isEditDialogShow.value = false;
-}
+
 const options = ref([
   {
     label: "Koła zainteresowań ",
@@ -509,7 +522,8 @@ const featureStyle = () => {
 const fetchPoints = async () => {
   try {
     const response = await axios.get(
-      "http://127.0.0.1:8080/api/get-all-events/",
+
+      "https://sixty-ants-write.loca.lt/api/get-all-events/",
       {
         params: {
           typ: ["ogloszenia"],
@@ -559,13 +573,13 @@ const geoLocChange = (event) => {
   view.value?.setCenter(event.target?.getPosition());
 };
 
-let enableCoords = ref(false);
-
 const manageClick = (event) => {
   if (enableCoords.value) {
     console.log("Clicked coordinates:", event.coordinate);
     objToSend.value.cordinats = event.coordinate;
-    enableCoords.value = false;
+    setTimeout(() => {
+      disablePointingCoors();
+    }, 500);
   }
 };
 ///////////////////////////POINT FORM/////////////////////////////////////
@@ -575,20 +589,41 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 
+function clearForm() {
+  objToSend.value = {
+    name: "",
+    description: "",
+    link: "",
+    location: "",
+    cordinats: [],
+    date: Date(),
+    isRecursive: false,
+    recursiveWeekDay: "",
+  };
+}
+
 const sendNewEvent = () => {
+  addDialogHide();
   axios
-    .post("add-event", {
-      types: newEvent.value.types,
-      beginDate: newEvent.value.date,
-      endDate: Date("12-11-2023"),
-      frequency: "week",
-      title: "rfejiorfe",
-      description: "iedtrfuhgnsiuojhngf9pios",
-      coordinates: newEvent.value.points,
-      author: "me",
-      placeName: "Sztab",
-    })
+    .post(
+      "https://sixty-ants-write.loca.lt/api/post-add-event/",
+      JSON.stringify({
+        id: 423,
+        type: group.value[0],
+        startDateTime: objToSend.value.date,
+        endDateTime: objToSend.value.date,
+        recurrence: objToSend.value.isRecursive,
+        name: objToSend.value.name,
+        description: objToSend.value.description,
+        location: objToSend.value.location,
+        link: objToSend.value.link,
+        creator: "Marcinek",
+        latitude: objToSend.value.cordinats[1],
+        longitude: objToSend.value.cordinats[0],
+      })
+    )
     .then((res) => {
+      clearForm();
       res.forEach((b) => {});
     })
     .catch((err) => {
