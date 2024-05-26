@@ -10,7 +10,7 @@ from datetime import datetime
 import logging
 
 # Konfiguracja logowania
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 # Konfiguracja połączenia z bazą danych MongoDB
@@ -51,7 +51,7 @@ async def add_event(id: Annotated[int, Form()],
         return wynik
     except Exception as e:
         logger.error(f"Błąd podczas dodawania ogłoszenia: {str(e)}")
-        logger.debug(f"Parametry żądania: id={id}, type={type}, startDateTime={startDateTime}, endDateTime={endDateTime}, recurrence={recurrence}, name={name}, description={description}, location={location}, link={link}, creator={creator}, longitude={longitude}, latitude={latitude}")
+        logger.error(f"Parametry żądania: id={id}, type={type}, startDateTime={startDateTime}, endDateTime={endDateTime}, recurrence={recurrence}, name={name}, description={description}, location={location}, link={link}, creator={creator}, longitude={longitude}, latitude={latitude}")
         raise HTTPException(status_code=422, detail="Unprocessable Entity")
 
 @app.post("/api/post-update-event/")
@@ -72,7 +72,7 @@ async def update_event(event_id: Annotated[int, Form()],
         return wynik
     except Exception as e:
         logger.error(f"Błąd podczas modyfikacji ogłoszenia: {str(e)}")
-        logger.debug(f"Parametry żądania: event_id={event_id}, type={type}, startDateTime={startDateTime}, endDateTime={endDateTime}, recurrence={recurrence}, name={name}, description={description}, location={location}, link={link}, creator={creator}, longitude={longitude}, latitude={latitude}")
+        logger.error(f"Parametry żądania: event_id={event_id}, type={type}, startDateTime={startDateTime}, endDateTime={endDateTime}, recurrence={recurrence}, name={name}, description={description}, location={location}, link={link}, creator={creator}, longitude={longitude}, latitude={latitude}")
         raise HTTPException(status_code=422, detail="Unprocessable Entity")
 
 @app.post("/api/post-remove-event/")
@@ -82,7 +82,7 @@ async def remove_event(event_id: Annotated[int, Form()]):
         return result
     except Exception as e:
         logger.error(f"Błąd podczas usuwania ogłoszenia: {str(e)}")
-        logger.debug(f"Parametry żądania: event_id={event_id}")
+        logger.error(f"Parametry żądania: event_id={event_id}")
         raise HTTPException(status_code=422, detail="Unprocessable Entity")
 
 @app.post("/api/post-add-przejazd/")
@@ -99,7 +99,7 @@ async def add_przejazd(id: Annotated[int, Form()],
         return result
     except Exception as e:
         logger.error(f"Błąd podczas dodawania przejazdu: {str(e)}")
-        logger.debug(f"Parametry żądania: id={id}, DateTime={DateTime}, name={name}, description={description}, startLocation={startLocation}, endLocation={endLocation}, creator={creator}, passengerNum={passengerNum}")
+        logger.error(f"Parametry żądania: id={id}, DateTime={DateTime}, name={name}, description={description}, startLocation={startLocation}, endLocation={endLocation}, creator={creator}, passengerNum={passengerNum}")
         raise HTTPException(status_code=422, detail="Unprocessable Entity")
 
 @app.post("/api/post-modify-przejazd/")
@@ -116,7 +116,7 @@ async def modify_przejazd(id: Annotated[int, Form()],
         return result
     except Exception as e:
         logger.error(f"Błąd podczas modyfikacji przejazdu: {str(e)}")
-        logger.debug(f"Parametry żądania: id={id}, DateTime={DateTime}, name={name}, description={description}, startLocation={startLocation}, endLocation={endLocation}, creator={creator}, passengerNum={passengerNum}")
+        logger.error(f"Parametry żądania: id={id}, DateTime={DateTime}, name={name}, description={description}, startLocation={startLocation}, endLocation={endLocation}, creator={creator}, passengerNum={passengerNum}")
         raise HTTPException(status_code=422, detail="Unprocessable Entity")
 
 @app.post("/api/post-remove-przejazd/")
@@ -126,7 +126,7 @@ async def remove_przejazd(id: Annotated[int, Form()]):
         return result
     except Exception as e:
         logger.error(f"Błąd podczas usuwania przejazdu: {str(e)}")
-        logger.debug(f"Parametry żądania: id={id}")
+        logger.error(f"Parametry żądania: id={id}")
         raise HTTPException(status_code=422, detail="Unprocessable Entity")
 
 @app.get("/api/get-all-events/")
