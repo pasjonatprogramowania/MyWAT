@@ -28,6 +28,7 @@
             <q-option-group
               v-model="group"
               :options="options"
+              @update:model-value="fetchPoints"
               color="primary"
               class="q-pa-sm"
               type="checkbox"
@@ -417,7 +418,7 @@ let objToSend = ref({
   recursiveWeekDay: "",
   author: "",
 });
-const server = "https://itchy-kids-change.loca.lt/api";
+const server = "https://thick-icons-sip.loca.lt/api";
 
 var przejazdy = [];
 
@@ -497,7 +498,7 @@ const options = ref([
   },
   {
     label: "Ogłoszenia",
-    value: "ogłoszenia",
+    value: "ogloszenia",
   },
 ]);
 ////////////////MAP///////////////////////////
@@ -542,16 +543,16 @@ const featureStyle = () => {
 
 const fetchPoints = async () => {
   try {
-    const params = {};
+    const params = {
+      typ: [],
+    };
     for (const g of group.value) {
       params[`typ`] = params[`typ`] ? [...params[`typ`], g] : [g];
     }
+    console.log(params);
 
     const response = await axios.get(server + "/get-all-events/", {
       params,
-      paramsSerializer: (params) => {
-        return new URLSearchParams(params).toString();
-      },
     });
 
     const data = JSON.parse(response.data);
@@ -620,6 +621,7 @@ function clearForm() {
     date: Date(),
     isRecursive: false,
     recursiveWeekDay: "",
+    author: "",
   };
 }
 
@@ -638,7 +640,8 @@ const sendNewEvent = () => {
     .toISOString()
     .slice(0, 19)
     .replace("T", " ");
-
+  console.log(group.value);
+  formData.append("type", group.value[0]);
   formData.append("startDateTime", startDateTime);
   formData.append("endDateTime", endDateTime);
   formData.append("recurrence", objToSend.value.isRecursive.toString());
@@ -657,6 +660,7 @@ const sendNewEvent = () => {
       console.log("Form data sent successfully:", response.data);
       // Clear the form
       clearForm();
+      fetchPoints();
     })
     .catch((error) => {
       console.error("Error sending form data:", error);
