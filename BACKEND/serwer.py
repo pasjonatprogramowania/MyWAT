@@ -22,8 +22,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 @app.post("/api/post-add-event/")
-async def add_event(id: Annotated[int, Form()], type: Annotated[str, Form()], startDateTime: Annotated[str, Form()], 
-                    endDateTime: Annotated[str, Form()], recurrence: Annotated[str, Form()], name: Annotated[str, Form()], 
+async def add_event(id: Annotated[int, Form()], type: Annotated[str, Form()], startDateTime: Annotated[datetime, Form()], 
+                    endDateTime: Annotated[datetime, Form()], recurrence: Annotated[str, Form()], name: Annotated[str, Form()], 
                     description: Annotated[str, Form()], location: Annotated[str, Form()], link: Annotated[str, Form()], 
                     creator: Annotated[str, Form()], longitude: Annotated[str, Form()], latitude: Annotated[str, Form()]):
     wynik = createOgloszenie(id, type, startDateTime, endDateTime, recurrence, name, description, location, link, creator, longitude,latitude)
