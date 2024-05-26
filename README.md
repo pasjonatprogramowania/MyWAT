@@ -74,6 +74,13 @@ Aplikacja składa się z następujących plików i folderów:
 
 - `quasar-project/`: Folder zawierający pliki związane z frontendem aplikacji, zbudowanym przy użyciu frameworka Quasar.
 
+## Technologie
+
+- 🐍 Backend: FastAPI (Python)
+- 🌿 Frontend: Quasar Framework (Vue.js)
+- 🍃 Baza danych: MongoDB
+- 🌐 Mapy: OpenLayers, OpenStreetMap
+
 ## Uruchomienie aplikacji
 
 Aby uruchomić aplikację, należy wykonać plik `serwer.py`. Serwer zostanie uruchomiony na lokalnym adresie `127.0.0.1` i porcie `8080`.
