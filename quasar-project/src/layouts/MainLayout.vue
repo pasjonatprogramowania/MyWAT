@@ -307,9 +307,10 @@
       <q-list>
         <q-card>
           <q-card-section>
-            <div class="text-h6">{{ showedEvent.title }}</div>
-            <q-item caption>Author: {{ showedEvent.author }}</q-item>
+            <div class="text-h6">{{ showedEvent.name }}</div>
+            <q-item caption>Author: {{ showedEvent.creator }}</q-item>
             <q-item>Link: {{ showedEvent.link }}</q-item>
+            <q-item>{{ showedEvent.description }}</q-item>
             <q-item>Czas rozpoczęcia{{ showedEvent.startDateTime }}</q-item>
             <q-item v-show="showedEvent.isRecursive"
               >Wydarzenie jest cykliczne</q-item
@@ -462,7 +463,7 @@ let objToSend = ref({
   recursiveWeekDay: "",
   author: "",
 });
-const server = "https://thin-wings-tan.loca.lt/api";
+const server = "https://lovely-pants-battle.loca.lt/api";
 
 const isShowedEvent = ref(false);
 const showedEvent = ref({});
@@ -568,7 +569,7 @@ const points = ref([
     _id: 234,
     latitude: 6846509,
     longitude: 2325880,
-    title: "Sprzedam auto",
+    title: "Juwenalia w szczerym polu!",
     description: "fe",
     author: "Mariusz",
     startDateTime: Date(),
@@ -577,11 +578,33 @@ const points = ref([
   {
     id: 32,
     _id: 432,
+    latitude: 6806509,
+    longitude: 2205880,
+    title: "Koło szachowe",
+    description: "Zbieramy chętnych na grę w szachy ",
+    author: "Agata",
+    startDateTime: Date(),
+    type: "kz",
+  },
+  {
+    id: 32,
+    _id: 432,
     latitude: 6846509,
     longitude: 2275880,
     title: "Sprzedam lodówkę",
     description: "ew",
-    author: "Oliwier",
+    author: "Łukasz",
+    startDateTime: Date(),
+    type: "ogloszenie",
+  },
+  {
+    id: 32,
+    _id: 432,
+    latitude: 6906509,
+    longitude: 2305880,
+    title: "Sprzedam auto",
+    description: "ew",
+    author: "Mariusz",
     startDateTime: Date(),
     type: "ogloszenie",
   },
@@ -746,4 +769,8 @@ const sendNewEvent = () => {
       console.error("Error sending form data:", error);
     });
 };
+
+function filterPoints() {
+  const res = [];
+}
 </script>
